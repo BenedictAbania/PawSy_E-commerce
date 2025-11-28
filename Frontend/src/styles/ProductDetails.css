@@ -1,0 +1,230 @@
+/* src/styles/ProductDetails.css */
+
+/* Re-use Cart Alert Style */
+.cart-alert {
+  position: fixed;
+  top: 100px; /* Adjust if navbar height changes */
+  right: 20px;
+  z-index: 1050;
+  min-width: 300px;
+}
+
+.product-details-page {
+  max-width: 1200px; /* Limit overall width */
+}
+
+/* --- Header --- */
+.details-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.back-button {
+  font-size: 1.2rem;
+  padding: 5px 10px;
+  color: #6c757d; /* Muted gray */
+  text-decoration: none;
+}
+.back-button:hover {
+  color: #333;
+  background-color: #f8f9fa; /* Light hover background */
+}
+
+.details-breadcrumb .breadcrumb-item a {
+  color: #6c757d;
+  text-decoration: none;
+}
+.details-breadcrumb .breadcrumb-item a:hover {
+  color: #f59e0b; /* Theme color on hover */
+}
+.details-breadcrumb .breadcrumb-item.active {
+  color: #333; /* Darker color for active item */
+  font-weight: 500;
+}
+
+/* --- Image Container --- */
+.image-container {
+  background-color: #f8f9fa; /* Light background */
+  padding: 20px;
+  border-radius: 8px;
+  display: flex; /* Center image */
+  align-items: center;
+  justify-content: center;
+  height: 500px; /* Fixed height for consistency */
+  border: 1px solid #dee2e6;
+}
+
+.image-container img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain; /* Show the whole image */
+}
+
+/* --- Product Info --- */
+.product-title {
+  font-weight: 700;
+  font-size: 2.2rem; /* Slightly smaller than original */
+  color: #212529; /* Dark text */
+  margin-bottom: 10px;
+}
+
+.price-rating-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Space between price and rating */
+  margin: 15px 0 20px 0;
+  flex-wrap: wrap; /* Allow wrapping */
+}
+
+.product-price {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333; /* Match card price color */
+}
+
+/* Re-use star rating styles from ProductCard */
+.details-star-rating {
+  color: #ffc107; /* Gold/yellow for stars */
+  font-size: 1rem; /* Slightly smaller for details */
+}
+.details-star-rating .rating-value {
+  color: #6c7d8e;
+  font-size: 0.9em;
+  margin-left: 5px;
+}
+
+.product-description {
+  color: #495057; /* Softer text color */
+  line-height: 1.6;
+  margin-bottom: 25px;
+}
+
+/* --- Color Swatches --- */
+.color-selection .form-label {
+  font-weight: 600;
+}
+
+.color-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #dee2e6; /* Light border */
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.color-swatch:hover {
+  transform: scale(1.1);
+}
+
+.color-swatch.selected {
+  border-color: #333; /* Dark border for selected */
+  box-shadow: 0 0 0 2px white, 0 0 0 4px #333; /* Outline effect */
+}
+
+/* --- Quantity Selector (Unified) --- */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* Allow wrapping */
+  gap: 15px;
+}
+
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.quantity-selector .btn-light {
+  border-radius: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 8px 12px; /* Consistent padding */
+  border-left: 1px solid #ced4da;
+  border-right: 1px solid #ced4da;
+}
+.quantity-selector .btn-light:first-child { border-left: none; }
+.quantity-selector .btn-light:last-child { border-right: none; }
+
+.quantity-display {
+  padding: 8px 16px;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* --- Add to Cart Button (UNIFIED) --- */
+.add-to-cart-btn,
+.add-to-cart-btn:hover,
+.add-to-cart-btn:active,
+.add-to-cart-btn:focus {
+  background-color: #f59e0b !important;
+  border-color: #f59e0b !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 10px 25px; /* Slightly larger padding */
+  box-shadow: none !important;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.add-to-cart-btn:hover {
+  background-color: #e08e0b !important;
+  border-color: #e08e0b !important;
+}
+
+/* --- Features List --- */
+.features-list {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 25px 0;
+  padding: 15px 0;
+  border-top: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.features-list span {
+  margin-right: 5px; /* Space before bullet */
+}
+
+/* --- Wishlist Button (UNIFIED) --- */
+.secondary-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Space between buttons */
+  margin-top: 20px;
+}
+
+.wishlist-btn {
+  padding: 0;
+  text-decoration: none;
+  font-weight: 600;
+  color: #dc3545; /* Red color */
+  font-size: 0.95rem;
+}
+
+.wishlist-btn:hover {
+  color: #a71d2a; /* Darker red */
+  text-decoration: underline;
+}
+
+.wishlist-btn .svg-inline--fa {
+  font-size: 1rem; /* Adjust icon size if needed */
+}
+
+/* --- Share Button (Optional) --- */
+.share-btn {
+   padding: 0;
+   text-decoration: none;
+   font-weight: 600;
+   color: #6c757d; /* Gray color */
+   font-size: 0.95rem;
+}
+.share-btn:hover {
+   color: #333;
+}

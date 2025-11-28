@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "name": "Pet Carrier",
+    "price": 25.99,
+    "category": "Accessories",
+    "brand": "PawBrand",
+    "tags": ["Travel"],
+    "image": "/assets/pet-carrier.png",
+    "petType": "Cat"
+  },
+  {
+    "id": 2,
+    "name": "Cat Bowl",
+    "price": 9.99,
+    "category": "Feeding",
+    "brand": "WhiskerCo",
+    "tags": ["Food"],
+    "image": "/assets/cat-bowl.png",
+    "petType": "Cat"
+  },
+  {
+    "id": 3,
+    "name": "Dog Bowl",
+    "price": 10.49,
+    "category": "Feeding",
+    "brand": "PawBrand",
+    "tags": ["Food"],
+    "image": "/assets/dog-bowl.png",
+    "petType": "Dog"
+  },
+  {
+    "id": 4,
+    "name": "Premium Dog Food",
+    "price": 29.99,
+    "category": "Food",
+    "brand": "Royal Canin",
+    "tags": ["Natural"],
+    "image": "/assets/dog-food.png",
+    "petType": "Dog"
+  },
+  {
+    "id": 5,
+    "name": "Cat Bed",
+    "price": 19.99,
+    "category": "Beds",
+    "brand": "PawBrand",
+    "tags": ["Comfort"],
+    "image": "/assets/cat-bed.png",
+    "petType": "Cat"
+  },
+  {
+    "id": 6,
+    "name": "Parrot Cage",
+    "price": 22.99,
+    "category": "Accessories",
+    "brand": "WhiskerCo",
+    "tags": ["Comfort"],
+    "image": "/assets/parrot-cage.png",
+    "petType": "Parrot"
+  }
+]

@@ -1,0 +1,77 @@
+.edit-card {
+  max-width: 980px;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  padding: 2rem 2.5rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.edit-title {
+  color: #f87537;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.form-control-custom {
+  background: #f3f3f3;
+  border: none;
+  padding: 12px 14px;
+  border-radius: 6px;
+  height: 48px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.password-section .form-label {
+  margin-top: 0.25rem;
+}
+
+.btn-save {
+  background: #f87537;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.btn-save:hover {
+  background: #ffffff;
+  color: #f87537;
+  border: 1px solid #f87537;
+}
+
+.btn-cancel {
+  background: #c0321f;
+  color: #fff;
+  border-color: #c0321f;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.btn-cancel:hover,
+.btn-cancel:focus {
+  background: #ffffff;
+  color: #c0321f;
+  border-color: #c0321f;
+}
+
+/* small screens adjustments */
+@media (max-width: 576px) {
+  .edit-card {
+    padding: 1.25rem;
+  }
+  .edit-title {
+    font-size: 1.25rem;
+  }
+}

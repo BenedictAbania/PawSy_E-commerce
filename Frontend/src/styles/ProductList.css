@@ -1,0 +1,21 @@
+/* src/styles/ProductList.css */
+
+/* Title Style */
+.product-list-container h2 {
+  font-weight: 700;
+  color: #333; /* Dark heading color */
+}
+
+/* --- Global Alert (copied again for consistency) --- */
+.cart-alert {
+  position: fixed;
+  top: 100px; /* Adjust if navbar height changes */
+  right: 20px;
+  z-index: 1050;
+  min-width: 300px;
+}
+
+/* Ensure cards stretch to fill column height if needed */
+.d-flex.align-items-stretch > * {
+  height: 100%;
+}

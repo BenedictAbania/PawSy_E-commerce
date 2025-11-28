@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "Premium Dog Food",
+    "price": 19.99,
+    "image": "/assets/feature/Feature1.png"
+  },
+  {
+    "id": 2,
+    "name": "Premium Cat Food",
+    "price": 19.99,
+    "image": "/assets/feature/Feature2.png"
+  },
+  {
+    "id": 3,
+    "name": "Dewormer - Dematocide",
+    "price": 19.99,
+    "image": "/assets/feature/Feature3.png"
+  },
+  {
+    "id": 4,
+    "name": "Dog Collar",
+    "price": 11.99,
+    "image": "/assets/feature/Feature4.png"
+  },
+  {
+    "id": 5,
+    "name": "Premium Dog Toy",
+    "price": 25.99,
+    "image": "/assets/feature/Feature5.png"
+  }
+]

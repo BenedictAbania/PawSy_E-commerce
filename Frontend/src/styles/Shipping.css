@@ -1,0 +1,51 @@
+/* --- UNIFIED STYLES ---
+  We import the payment styles, which chain-imports all the other 
+  checkout styles. This is the final step in unifying the CSS
+  for the entire checkout flow.
+*/
+@import url('./Payment.css');
+
+/* --- Shipping Page Specific Styles --- */
+
+.shipping-option-card {
+  padding: 10px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #e9ecef;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shipping-option-card.selected {
+  border-color: #f59e0b; /* Our app's theme color */
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+}
+
+.shipping-option-card .form-check-label {
+  width: 90%;
+}
+
+.shipping-option-card .card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shipping-details {
+  font-weight: 500;
+  color: #212529;
+}
+
+.shipping-details strong {
+  margin-right: 8px;
+}
+
+.shipping-date {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.shipping-date.select-date {
+  color: #0d6efd; /* Bootstrap primary blue */
+  text-decoration: underline;
+}

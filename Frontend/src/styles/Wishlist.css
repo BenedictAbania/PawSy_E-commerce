@@ -1,0 +1,54 @@
+/* src/styles/Wishlist.css */
+
+/* --- Header Styling --- */
+.wishlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0; /* Light separator line */
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 15px; /* Space between title and button if wrapped */
+}
+
+.wishlist-header h1 {
+  color: #333;
+  font-size: 1.8rem; /* Consistent heading size */
+  font-weight: 700;
+  margin: 0;
+}
+
+/* --- Move All Button (UNIFIED with Add to Cart) --- */
+.move-all-btn,
+.move-all-btn:hover,
+.move-all-btn:active,
+.move-all-btn:focus {
+  background-color: #f59e0b !important; /* Theme orange */
+  border-color: #f59e0b !important;
+  color: white !important;
+  font-weight: 600;
+  box-shadow: none !important;
+  white-space: nowrap; /* Prevent button text wrapping */
+  padding: 8px 16px; /* Match ProductCard button size */
+  font-size: 0.95rem;
+}
+
+.move-all-btn:hover {
+  background-color: #e08e0b !important; /* Darker orange */
+  border-color: #e08e0b !important;
+}
+
+/* --- Global Alert Style (Ensure consistency) --- */
+.cart-alert {
+  position: fixed;
+  top: 100px; /* Adjust based on your navbar height */
+  right: 20px;
+  z-index: 1050;
+  min-width: 300px;
+}
+
+/* --- Ensure cards stretch (if using d-flex/align-items-stretch on Col) --- */
+.d-flex.align-items-stretch > * {
+  height: 100%;
+}
