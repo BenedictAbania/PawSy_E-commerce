@@ -7,6 +7,7 @@ import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import "../styles/Shop.css";
 import ProductCard from "../components/ProductCard";
+import LoginRequiredModal from "../components/LoginRequiredModal";
 
 import catImg from "../assets/pets/cat.png";
 import dogImg from "../assets/pets/dog.png";
@@ -65,8 +66,21 @@ const Shop = ({
   });
   const [showCartAlert, setShowCartAlert] = useState(false);
   const [alertProduct, setAlertProduct] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalAction, setModalAction] = useState('addToCart');
 
   const handleAddToCart = (product) => {
+    const currentUser = localStorage.getItem('currentUser');
+    
+    if (!currentUser) {
+      // User not logged in - show modal
+      setSelectedProduct(product);
+      setModalAction('addToCart');
+      setShowLoginModal(true);
+      return;
+    }
+    
     const updatedCart = [...cartItems];
     const existing = updatedCart.find((item) => item.id === product.id);
 
@@ -82,6 +96,21 @@ const Shop = ({
     setAlertProduct(product.name);
     setShowCartAlert(true);
     setTimeout(() => setShowCartAlert(false), 2500);
+  };
+
+  const handleToggleFavorite = (product) => {
+    const currentUser = localStorage.getItem('currentUser');
+    
+    if (!currentUser) {
+      // User not logged in - show modal
+      setSelectedProduct(product);
+      setModalAction('addToWishlist');
+      setShowLoginModal(true);
+      return;
+    }
+
+    // User is logged in - toggle favorite
+    onToggleFavorite(product);
   };
 
   const handleGoToCart = () => {
@@ -261,7 +290,7 @@ const Shop = ({
                     product={product}
                     onAddToCart={handleAddToCart}
                     isFavorite={favorites.some((fav) => fav.id === product.id)}
-                    onToggleFavorite={onToggleFavorite}
+                    onToggleFavorite={handleToggleFavorite}
                   />
                 </Col>
               ))
@@ -273,6 +302,15 @@ const Shop = ({
           </Row>
         </Col>
       </Row>
+
+      {/* Login Required Modal */}
+      {showLoginModal && (
+        <LoginRequiredModal
+          product={selectedProduct}
+          onClose={() => setShowLoginModal(false)}
+          action={modalAction}
+        />
+      )}
     </Container>
   );
 };
