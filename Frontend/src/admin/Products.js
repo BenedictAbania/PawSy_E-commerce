@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Form, InputGroup, Modal, Badge, Row, Col, Card, Spinner } from 'react-bootstrap';
 
-// --- IMPORT LOCAL IMAGES (Correct Path) ---
-// Ang './' ay ibig sabihin "current folder" (src/admin).
-// Kaya './assets/...' ay hahanapin sa src/admin/assets/
+
 import imgDogFood from './assets/dog_food.png';   
 import imgCatTower from './assets/cat_tower.png'; 
 import imgBoneToy from './assets/bone_toy.png';   
 
-// --- PLACEHOLDER FOR BACKEND URL ---
+
 const API_URL = "http://localhost:5000/api/products"; 
 
-// --- INLINE ICONS ---
+
 const IconPlus = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
 const IconSearch = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>;
 const IconEdit = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>;
@@ -33,11 +31,11 @@ const Products = () => {
     id: null, name: '', category: 'Foods', price: '', stock: '', image: '' 
   });
 
-  // --- FETCH DATA (Simulated API Call) ---
+  
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      // MOCK DATA (With Local Images)
+      
       await new Promise(resolve => setTimeout(resolve, 800)); // Fake delay
       const mockData = [
         { id: 101, name: 'Premium Dog Food', category: 'Foods', price: 45.00, stock: 20, image: imgDogFood },
@@ -98,11 +96,11 @@ const Products = () => {
   const handleSave = async () => {
     if (!currentProduct.name) return alert("Enter name");
     
-    // Auto-Image Logic (Fallback if no upload)
+    
     let finalImage = currentProduct.image;
     if (!finalImage) {
         switch(currentProduct.category) {
-            // Using placeholder only if user creates new item without uploading
+           
             default: finalImage = 'https://placehold.co/300x200/orange/white?text=PawSy';
         }
     }
@@ -125,7 +123,7 @@ const Products = () => {
 
   return (
     <div className="bg-white p-4 rounded shadow-sm">
-      {/* HEADER */}
+      {}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h3 className="fw-bold m-0">Manage Products</h3>
         <div className="d-flex gap-2">
@@ -138,7 +136,7 @@ const Products = () => {
         </div>
       </div>
 
-      {/* SEARCH */}
+      {}
       <Row className="mb-3">
         <Col md={5}>
           <InputGroup>
@@ -153,7 +151,7 @@ const Products = () => {
         </Col>
       </Row>
 
-      {/* ADMIN TABLE */}
+      {}
       {isLoading ? (
         <div className="text-center py-5">
             <Spinner animation="border" variant="warning" />
@@ -193,12 +191,12 @@ const Products = () => {
         </div>
       )}
 
-      {/* MODAL: ADD/EDIT FORM */}
+      {}
       <Modal show={showModal} onHide={() => setShowModal(false)} backdrop="static" centered>
         <Modal.Header closeButton><Modal.Title>{isEditing ? 'Edit' : 'New'} Product</Modal.Title></Modal.Header>
         <Modal.Body>
           <Form>
-            {/* UPLOAD IMAGE BUTTON */}
+            {}
             <div className="mb-4 text-center">
                <div style={{width: '100px', height: '100px', background: '#f8f9fa', border: '2px dashed #dee2e6', borderRadius: '8px', margin: '0 auto 10px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
                   {currentProduct.image ? (
@@ -234,7 +232,7 @@ const Products = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* MODAL: SHOP PREVIEW */}
+      {}
       <Modal show={showPreview} onHide={() => setShowPreview(false)} size="xl" centered>
         <Modal.Header className="bg-light">
            <Modal.Title className="fw-bold text-dark d-flex align-items-center gap-2">
@@ -251,7 +249,7 @@ const Products = () => {
              {filteredProducts.length > 0 ? filteredProducts.map(p => (
                <Col md={3} className="mb-4" key={p.id}>
                  <Card className="h-100 border-0 shadow-sm">
-                    {/* PRODUCT IMAGE IN PREVIEW */}
+                    {}
                     <div style={{height: '180px', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', borderBottom: '1px solid #eee'}}>
                        {p.image ? (
                          <img src={p.image} alt={p.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
