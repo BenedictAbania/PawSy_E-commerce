@@ -92,7 +92,7 @@ const NavBar = ({ favoritesCount = 0 }) => {
                     <div className="profile-name">{user.fullName}</div>
                     <div className="profile-email">{user.email}</div>
                     <div className="profile-actions">
-                      <Link to="/account" onClick={() => setOpen(false)}>Account</Link>
+                      <Link to="/my-profile" onClick={() => setOpen(false)}>MyProfile</Link>
                       <button className="logout-btn" onClick={handleLogout}>Logout</button>
                     </div>
                   </div>

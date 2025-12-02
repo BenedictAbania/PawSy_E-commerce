@@ -23,8 +23,8 @@ import ProductList from "./pages/ProductList";
 import Wishlist from "./pages/Wishlist";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-
-
+import MyProfile from "./pages/MyProfile";
+import TrackOrders from "./pages/TrackOrders";
 import AdminLayout from "./admin/AdminLayout";
 import Dashboard from "./admin/Dashboard";
 import Products from "./admin/Products";
@@ -66,8 +66,10 @@ function App() {
             <Route path="/home" element={<LandingPage />} />
             <Route path="/aboutUs" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
-            <Route path="/account" element={<Account />} />
             <Route path="/edit-profile" element={<EditProfile />} />
+            <Route path="/my-profile" element={<MyProfile />} />
+            <Route path="/track-orders" element={<TrackOrders />} />
+
 
             {}
             <Route path="/cart" element={<CartPage />} />
