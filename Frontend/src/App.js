@@ -20,6 +20,8 @@ import Payment from "./pages/Payment";
 import ProductDetails from "./pages/ProductDetails";
 import ProductList from "./pages/ProductList"; // Assuming you use this
 import Wishlist from "./pages/Wishlist";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 function App() {
   // --- Global Wishlist State ---
@@ -93,6 +95,9 @@ function App() {
             />
           }
         />
+        {/* Login and Signup Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
       {/* --- END OF ROUTES --- */}
 

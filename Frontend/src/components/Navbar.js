@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 // --- ADD Badge ---
 import { Navbar, Nav, Container, Form, FormControl, Button, Badge } from "react-bootstrap"; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,7 +9,40 @@ import "../styles/Navbar.css";
 import Logo from "../assets/icon-logo.png";
 
 // --- Accept favoritesCount as a prop ---
-const NavBar = ({ favoritesCount = 0 }) => { 
+const NavBar = ({ favoritesCount = 0 }) => {
+  const [user, setUser] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('currentUser');
+      if (raw) setUser(JSON.parse(raw));
+    } catch (e) {
+      // ignore
+    }
+  }, []);
+
+  // listen for in-tab auth updates
+  useEffect(() => {
+    const handler = () => {
+      try {
+        const raw = localStorage.getItem('currentUser');
+        setUser(raw ? JSON.parse(raw) : null);
+      } catch (e) {}
+    };
+    window.addEventListener('authUpdated', handler);
+    return () => window.removeEventListener('authUpdated', handler);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    setUser(null);
+    setOpen(false);
+    try { window.dispatchEvent(new Event('authUpdated')); } catch (e) {}
+    // navigate to home by link click; using window.location is fine here
+    window.location.href = '/';
+  };
+
   return (
     <Navbar expand="lg" className="main-navbar">
       <Container>
@@ -38,10 +71,9 @@ const NavBar = ({ favoritesCount = 0 }) => {
               {/* Optional: Add cart count badge later */}
             </Link>
 
-            {/* --- FIX 3: Make Heart Icon a Link to Wishlist & Add Badge --- */}
+            {/* Wishlist Icon */}
             <Link to="/wishlist" className="nav-icon position-relative">
-              <FontAwesomeIcon icon={faHeartRegular} /> 
-              {/* Show badge only if count > 0 */}
+              <FontAwesomeIcon icon={faHeartRegular} />
               {favoritesCount > 0 && (
                 <Badge pill bg="danger" className="wishlist-badge">
                   {favoritesCount}
@@ -49,10 +81,28 @@ const NavBar = ({ favoritesCount = 0 }) => {
               )}
             </Link>
 
-            {/* Account Icon (already correct) */}
-            <Link to="/account" className="nav-icon position-relative">
-              <FontAwesomeIcon icon={faUser} />
-            </Link>
+            {/* Account Icon - shows login link or profile dropdown when logged in */}
+            {user ? (
+              <div className="nav-icon position-relative profile-menu">
+                <div onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
+                  <FontAwesomeIcon icon={faUser} />
+                </div>
+                {open && (
+                  <div className="profile-dropdown">
+                    <div className="profile-name">{user.fullName}</div>
+                    <div className="profile-email">{user.email}</div>
+                    <div className="profile-actions">
+                      <Link to="/account" onClick={() => setOpen(false)}>Account</Link>
+                      <button className="logout-btn" onClick={handleLogout}>Logout</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login" className="nav-icon position-relative">
+                <FontAwesomeIcon icon={faUser} />
+              </Link>
+            )}
           </div>
         </Navbar.Collapse>
       </Container>

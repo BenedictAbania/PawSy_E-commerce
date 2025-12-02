@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/LandingPage.css";
 import heroImage from "../assets/hero-image.png";
 import qualityImage from "../assets/dogNcat.png";
+import LoginRequiredModal from "../components/LoginRequiredModal";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
@@ -30,6 +31,9 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const [favorites, setFavorites] = useState([]);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalAction, setModalAction] = useState('addToCart');
 
 
   const categories = [
@@ -49,11 +53,47 @@ const LandingPage = () => {
   ];
 
 
-  // Toggle favorites
-  const toggleFavorite = (id) => {
+  // Toggle favorites with login check
+  const toggleFavorite = (id, product) => {
+    const currentUser = localStorage.getItem('currentUser');
+    
+    if (!currentUser) {
+      // User not logged in - show modal
+      setSelectedProduct(product);
+      setModalAction('addToWishlist');
+      setShowLoginModal(true);
+      return;
+    }
+
     setFavorites((prev) =>
       prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]
     );
+  };
+
+  // Handle add to cart with login check
+  const handleAddToCart = (product) => {
+    const currentUser = localStorage.getItem('currentUser');
+    
+    if (!currentUser) {
+      // User not logged in - show modal
+      setSelectedProduct(product);
+      setModalAction('addToCart');
+      setShowLoginModal(true);
+    } else {
+      // User is logged in - add to cart using cartItems (consistent with Shop)
+      const cartRaw = localStorage.getItem('cartItems') || '[]';
+      const cart = JSON.parse(cartRaw);
+      const existingItem = cart.find(item => item.id === product.id);
+      
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+      
+      localStorage.setItem('cartItems', JSON.stringify(cart));
+      alert(`${product.name} added to cart!`);
+    }
   };
 
 
@@ -141,7 +181,7 @@ const LandingPage = () => {
                     <Button
                       variant="link"
                       className="heart-btn p-0"
-                      onClick={() => toggleFavorite(product.id)}
+                      onClick={() => toggleFavorite(product.id, product)}
                     >
                       <FontAwesomeIcon
                         icon={
@@ -152,6 +192,13 @@ const LandingPage = () => {
                       />
                     </Button>
                   </Card.Text>
+                  <Button
+                    className="add-to-cart-btn"
+                    onClick={() => handleAddToCart(product)}
+                    style={{ width: '100%', backgroundColor: '#f97316', border: 'none' }}
+                  >
+                    Add to Cart
+                  </Button>
                 </Card.Body>
               </Card>
             ))}
@@ -235,7 +282,7 @@ const LandingPage = () => {
                       <Button
                         variant="link"
                         className="heart-btn p-0"
-                        onClick={() => toggleFavorite(product.id)}
+                        onClick={() => toggleFavorite(product.id, product)}
                       >
                         <FontAwesomeIcon
                           icon={
@@ -247,6 +294,13 @@ const LandingPage = () => {
                       </Button>
                     </Card.Text>
 
+                    <Button
+                      className="add-to-cart-btn"
+                      onClick={() => handleAddToCart(product)}
+                      style={{ width: '100%', backgroundColor: '#f97316', border: 'none' }}
+                    >
+                      Add to Cart
+                    </Button>
                   </Card.Body>
                 </Card>
               </Col>
@@ -280,6 +334,15 @@ const LandingPage = () => {
           </Row>
         </Container>
       </section>
+
+      {/* Login Required Modal */}
+      {showLoginModal && (
+        <LoginRequiredModal
+          product={selectedProduct}
+          onClose={() => setShowLoginModal(false)}
+          action={modalAction}
+        />
+      )}
     </div>
   );
 };
