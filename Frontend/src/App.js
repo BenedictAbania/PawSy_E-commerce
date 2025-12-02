@@ -21,6 +21,8 @@ import Payment from "./pages/Payment";
 import ProductDetails from "./pages/ProductDetails";
 import ProductList from "./pages/ProductList";
 import Wishlist from "./pages/Wishlist";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 
 import AdminLayout from "./admin/AdminLayout";
@@ -55,6 +57,7 @@ function App() {
 
   return (
     <BrowserRouter>
+
       <Routes>
         
         {}
@@ -73,38 +76,63 @@ function App() {
             <Route path="/payment" element={<Payment />} />
             <Route path="/confirmation" element={<div>Order Confirmation Page</div>} />
 
-            {}
-            <Route
-              path="/shop"
-              element={<Shop favorites={favorites} onToggleFavorite={toggleFavorite} />}
+        {/* Routes Receiving Wishlist Props */}
+        <Route
+          path="/shop"
+          element={
+            <Shop
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
             />
-            <Route
-              path="/shop/:id"
-              element={<ProductDetails favorites={favorites} onToggleFavorite={toggleFavorite} />}
+          }
+        />
+        <Route
+          path="/shop/:id"
+          element={
+            <ProductDetails
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
             />
-            <Route
-              path="/products"
-              element={<ProductList favorites={favorites} onToggleFavorite={toggleFavorite} />}
+          }
+        />
+         <Route
+          path="/products" // Assuming you use ProductList
+          element={
+            <ProductList
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
             />
-            <Route
-              path="/wishlist"
-              element={<Wishlist favorites={favorites} onToggleFavorite={toggleFavorite} />}
+          }
+        />
+         <Route
+          path="/wishlist"
+          element={
+            <Wishlist
+              favorites={favorites}
+              onToggleFavorite={toggleFavorite}
             />
-        </Route>
+          }
+        />
+        {/* ... previous routes ... */}
+        
+        {/* Login and Signup Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        
+      </Route>  {/* <--- ADD THIS LINE HERE to close UserLayout */}
 
+      {/* Admin Routes (Now separate from User Layout) */}
+      <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} /> 
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="products" element={<Products />} />
+          <Route path="users" element={<Users />} />
+      </Route>
 
-        {}
-        {}
-        <Route path="/admin" element={<AdminLayout />}>
-           <Route index element={<Dashboard />} /> 
-           <Route path="dashboard" element={<Dashboard />} />
-           <Route path="products" element={<Products />} />
-           <Route path="users" element={<Users />} />
-        </Route>
-
-      </Routes>
-    </BrowserRouter>
-  );
+    </Routes>
+    
+  </BrowserRouter>
+);
 }
 
 export default App;
