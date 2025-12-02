@@ -1,0 +1,38 @@
+.footer {
+  background: #f8f8f8;
+  padding: 60px 0;
+}
+
+.footer h6 {
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.footer ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer ul li {
+  margin-bottom: 8px;
+  color: #555;
+  cursor: pointer;
+}
+
+.footer ul li:hover {
+  color: #f87537;
+}
+
+.footer-logo {
+  color: #000000;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+  margin-top: 30px;
+  color: #777;
+}

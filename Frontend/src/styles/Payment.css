@@ -1,0 +1,60 @@
+/* --- UNIFIED STYLES ---
+  We import the checkout styles, which already include the order summary,
+  steps, and button styles from the cart. This keeps everything
+  consistent and avoids duplicate code.
+*/
+@import url('./Checkout-Address.css');
+
+/* --- Payment Page Specific Styles --- */
+
+.payment-card {
+  padding: 10px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid #e9ecef;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-card.selected {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.3);
+}
+
+.payment-card .form-check-label {
+  width: 90%;
+}
+
+.payment-details {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-weight: 500;
+}
+
+.card-logo {
+  width: 35px;
+  height: auto;
+}
+
+.card-info {
+  flex-grow: 1;
+}
+
+.card-expiry {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+}
+
+.payment-card .remove-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 0.9rem;
+  color: #dc3545;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.payment-card .remove-btn:hover {
+  color: #a71d2a;
+}

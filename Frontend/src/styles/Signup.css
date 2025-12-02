@@ -1,0 +1,148 @@
+.signup-page {
+  min-height: 100vh;
+}
+
+.signup-page * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+.signup-page .main {
+  display: flex;
+  flex: 1;
+  min-height: 80vh;
+}
+
+.signup-page .left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 40px;
+}
+
+.signup-page .right {
+  flex: 1;
+  background: url('https://images.unsplash.com/photo-1601758125946-6ec2e9c5b9b4?auto=format&fit=crop&w=1000&q=80') center/cover no-repeat;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+}
+
+.signup-page .box {
+  max-width: 380px;
+  width: 100%;
+}
+
+.signup-page .box h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #111;
+}
+
+.signup-page .box p.lead {
+  color: #555;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.signup-page label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.signup-page input[type="text"],
+.signup-page input[type="email"],
+.signup-page input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.signup-page .row {
+  display: flex;
+  gap: 12px;
+}
+
+.signup-page .row .col {
+  flex: 1;
+}
+
+.signup-page .terms {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.signup-page .primary-btn {
+  background-color: #f97316;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 100%;
+  padding: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.signup-page .primary-btn:hover {
+  background-color: #ea580c;
+}
+
+.signup-page .divider {
+  text-align: center;
+  margin: 20px 0;
+  color: #999;
+  font-size: 14px;
+}
+
+.signup-page .social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.signup-page .social-btn {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.signup-page .switch-link {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+.signup-page .switch-link a {
+  color: #f97316;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .signup-page .main {
+    flex-direction: column;
+  }
+  .signup-page .right {
+    display: none;
+  }
+}

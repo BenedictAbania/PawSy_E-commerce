@@ -1,0 +1,94 @@
+/* src/styles/ProductCard.css */
+
+.product-card-unified {
+  border: 1px solid #e9ecef;
+  border-radius: 8px; /* Slightly rounded corners */
+  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+  background-color: #fff;
+  overflow: hidden; /* Ensure image corners are rounded */
+}
+
+.product-card-unified:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Enhanced shadow on hover */
+}
+
+.product-card-unified .card-img-top {
+  height: 200px; /* Fixed height for image */
+  object-fit: contain; /* Show the whole image, maybe add padding */
+  background-color: #f8f9fa; /* Light background for images */
+  padding: 10px; /* Padding around image */
+}
+
+.product-card-link {
+  text-decoration: none;
+  color: inherit; /* Inherit color from parent */
+}
+
+/* Make title bold and slightly larger */
+.product-card-title .product-card-link {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333; /* Darker text */
+}
+
+.product-card-link:hover {
+  color: #f59e0b; /* Theme color on hover */
+}
+
+/* Star Rating Styles (matches details page) */
+.star-rating {
+  color: #ffc107; /* Gold/yellow for stars */
+  margin: 8px 0;
+  font-size: 0.9rem;
+}
+
+.rating-value {
+  color: #6c7d8e; /* Grayish text */
+  font-size: 0.85em;
+  margin-left: 5px;
+}
+
+/* Price Style (matches details page) */
+.product-price {
+  font-weight: 700;
+  color: #333; /* Dark price color */
+}
+
+/* Heart Button Style (matches details page) */
+.heart-btn {
+  font-size: 1.2rem;
+  color: #dc3545; /* Red color */
+}
+
+.heart-btn,
+.heart-btn:hover,
+.heart-btn:focus {
+  text-decoration: none;
+  box-shadow: none !important;
+  color: #dc3545;
+}
+
+.heart-btn:hover {
+   color: #a71d2a; /* Darker red on hover */
+}
+
+/* Add to Cart Button Style (UNIFIED - matches checkout/wishlist) */
+.add-to-cart-btn,
+.add-to-cart-btn:hover,
+.add-to-cart-btn:active,
+.add-to-cart-btn:focus {
+  background-color: #f59e0b !important; /* Theme orange */
+  border-color: #f59e0b !important;
+  color: white !important;
+  font-weight: 600;
+  padding: 8px 16px; /* Slightly smaller padding */
+  font-size: 0.95rem;
+  box-shadow: none !important;
+  border-radius: 4px; /* Rounded corners */
+}
+
+.add-to-cart-btn:hover {
+  background-color: #e08e0b !important; /* Darker orange */
+  border-color: #e08e0b !important;
+}

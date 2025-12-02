@@ -1,0 +1,115 @@
+.login-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.login-modal-content {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  animation: slideUp 0.3s ease-in-out;
+  position: relative;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.login-modal-content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #111;
+}
+
+.login-modal-content p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.btn-signup,
+.btn-login {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-signup {
+  background: #28a745;
+  color: #fff;
+}
+
+.btn-signup:hover {
+  background: #218838;
+}
+
+.btn-login {
+  background: #f97316;
+  color: #fff;
+}
+
+.btn-login:hover {
+  background: #ea580c;
+}

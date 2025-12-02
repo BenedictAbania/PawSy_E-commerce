@@ -1,0 +1,223 @@
+.landing-page {
+  font-family: "Poppins", sans-serif;
+  color: #333;
+}
+
+/* --- HERO --- */
+.hero-section {
+  padding: 100px 0;
+  background: #fff7f0;
+}
+.hero-section .brand-name {
+  color: #f87537;
+  font-weight: 600;
+}
+.hero-section h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.hero-section p {
+  color: #666;
+  max-width: 500px;
+}
+.shop-btn {
+  background-color: #fd7e14;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 25px;
+}
+
+/* --- CATEGORY --- */
+.category-section {
+  text-align: center;
+  padding: 80px 0;
+
+  margin-bottom: -100px;
+
+}
+.category-item {
+  padding: 20px;
+}
+.icon-placeholder {
+  width: 70px;
+  height: 70px;
+  background: #fff0e0;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+}
+.section-title {
+  font-weight: 700;
+}
+
+/* --- FEATURED PRODUCTS --- */
+.featured-products {
+
+  margin-top: -100px;
+  padding: 80px 0;
+  background: #fff7f0;
+}
+.feature-card{
+  margin-bottom: 100px;
+  border: none;
+}
+.product-image {
+  object-fit: cover;
+  height: 790px;
+  width: 180px;
+
+  background: #f2f2f2;
+  border-radius: 12px;
+}
+
+
+.arrow-btn {
+  margin-top: -100px;
+  border-radius: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: black;
+  border: none;
+}
+
+.arrow-btn:hover {
+  background-color: #fd7e14;
+}
+.heart-btn{
+  margin-left: 90px;
+}
+
+.featured-products {
+  margin-top: 80px;
+}
+
+.featured-scroll {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem 0;
+  scroll-snap-type: x mandatory;
+}
+
+.featured-scroll::-webkit-scrollbar {
+  display: none; 
+}
+
+.feature-card {
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.arrow-buttons-below {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.arrow-btn {
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+/* --- QUALITY --- */
+.quality-section .learn-more-btn {
+  background: #000000;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 24px;
+}
+
+.quality-header {
+  font-weight: bolder;
+}
+
+.quality-header2 {
+  font-weight: bolder;
+}
+.quality-image{
+  height: 370px;
+  width: 370px;
+  margin-left: 10px;
+
+  background-color: #ff8c00;
+  border-top-left-radius: 199px;
+  border-top-right-radius: 125px;
+  border-bottom-right-radius: 180px;
+  border-bottom-left-radius: 140px;
+}
+
+.quality-img{
+
+  height: 380px;
+  width: 350px;
+
+}
+
+/* --- BEST SELLING --- */
+.best-selling {
+  padding: 80px 0;
+  background: #fff;
+}
+.shop-all-btn {
+  background: #f87537;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 20px;
+}
+
+.product-card {
+  border: none;
+  padding: 20px;
+  margin: 10px;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.best-selling{
+  transition: transform 0.3s ease;
+}
+
+
+/*
+/* --- SHOP BY PET --- */
+.shop-by-pet {
+  padding: 80px 0;
+  text-align: center;
+}
+.pet-icon {
+  width: 70px;
+  height: 70px;
+  background: #fff0e0;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+}
+
+/* --- Category style --- */
+.category-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.product-image {
+  height: 200px;
+  object-fit: cover;
+}
+
+.category-item:hover {
+  transform: scale(1.05);
+  transition: 0.3s ease;
+}
+
+

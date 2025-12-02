@@ -1,0 +1,148 @@
+/* --- Cart Page Styles --- */
+
+.cart-container {
+  max-width: 1200px;
+}
+
+.cart-title {
+  font-weight: 700;
+}
+
+.item-count {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 400;
+  margin-left: 8px;
+}
+
+
+.cart-item {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.item-name {
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+}
+
+.item-color {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 16px;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.quantity-btn {
+  border: 1px solid #ced4da;
+  font-weight: 700;
+  width: 30px;
+  height: 30px;
+  line-height: 1;
+
+}
+
+.quantity-value {
+  margin: 0 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  min-width: 20px;
+  text-align: center;
+
+}
+
+.remove-btn {
+  color: #dc3545;
+  padding: 0;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  text-align: left;
+}
+
+.remove-btn:hover {
+  color: #a71d2a;
+}
+
+.item-price {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: right;
+  margin-top: 10px;
+}
+
+
+.discount-banner {
+  background-color: #fff3cd;
+  color: #664d03;
+  border: 1px solid #ffecb5;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* --- Order Summary --- */
+.order-summary {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 24px;
+  border: 1px solid #e9ecef;
+}
+
+.order-summary h3 {
+  font-weight: 600;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 10px;
+}
+
+.summary-line,
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+.summary-total {
+
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-top: 16px;
+}
+
+.free-shipping {
+  color: #198754;
+  font-weight: 500;
+}
+
+.delivery-date {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-top: 16px;
+}
+
+.checkout-btn {
+  background-color: #f59e0b; /* Orange from design */
+  border-color: #f59e0b;
+  color: #ffffff;
+  font-weight: 600;
+  padding: 12px;
+}
+
+.checkout-btn:hover {
+  background-color: #e6910a;
+  border-color: #e6910a;
+}

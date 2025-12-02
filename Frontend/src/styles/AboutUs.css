@@ -1,0 +1,82 @@
+.about-hero-img {
+  max-width: 100%;
+  height: auto;
+}
+
+.stats-row h3 {
+  font-size: 1.8rem;
+}
+
+.testimonial-circle {
+  margin-top: -100px;
+  width: 220px;
+  height: 220px;
+  background-color: #ff7e00;
+  border-top-left-radius: 199px;
+  border-top-right-radius: 125px;
+  border-bottom-right-radius: 180px;
+  border-bottom-left-radius: 140px;
+}
+
+.Christian {
+  margin-top: 30px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+
+.testimonial-img-wrapper {
+  position: relative;
+}
+
+.Why-choose-title h5 {
+  font-weight: 600px;
+  font-weight: bolder;
+}
+
+.about-text {
+  color: #FD7E14;
+}
+
+.why-choose-section {
+  margin-top: 50px;
+}
+
+.about-us-text {
+  display: flex;
+  justify-content: flex-start;
+  margin-left: -90px;
+  font-weight: bolder;
+  color: #000;
+}
+
+.vision-card, .mision-card {
+  border: 1px solid #FD7E14;
+  height: 390px;
+  width: 420px;
+}
+.vision-card:hover, .mision-card:hover {
+  box-shadow: 0 4px 8px rgba(253, 126, 20, 0.2);
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+}
+
+.vision-card {
+  margin-left: 150px;
+}
+
+.mision-card {
+  margin-right: 70px;
+}
+
+.about-text:hover{
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+#owner{
+  margin-top: 10px;
+  font-size: small;
+}
+
+

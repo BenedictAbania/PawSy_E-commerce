@@ -1,0 +1,174 @@
+.account-page {
+  padding-top: 2.5rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.account-page .account-header {
+  margin: 0;
+  padding: 0;
+  color: #6c757d;
+  line-height: 1.2;
+  display: inline-block;
+  vertical-align: baseline;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.account-page .account-header a {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.account-page .account-header a:hover {
+  color: #f87537;
+}
+
+.account-page .account-header:last-child {
+  color: #f87537;
+}
+
+.account-page .container {
+  text-align: left;
+}
+
+/* Profile section container */
+.account-page > .container:last-child {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Profile card styles */
+.profile-page-title {
+  color: #f87537;
+  font-weight: 700;
+  font-size: 2rem;
+  margin-bottom: 2rem !important;
+  padding-top: 0.5rem;
+}
+.profile-card .row {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+.profile-card {
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 3.5rem 3.5rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.profile-image {
+  width: 200px;
+  height: 260px;
+  position: relative;
+  margin: 0 auto; /* center the image block inside its column */
+  display: block;
+}
+
+.profile-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #e6e6e6;
+  color: #999;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.camera-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: #f87537;
+  color: #fff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.camera-btn:hover {
+  background: #e66a2f;
+}
+
+.profile-info {
+  padding-left: 1rem;
+  margin-top: 2rem;
+}
+
+.profile-info .info-label {
+  color: #f87537;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.profile-info .info-value {
+  font-weight: 700;
+  color: #212529;
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.btn-edit {
+  background: #f87537;
+  color: #fff;
+  border: 1px solid #f87537;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.btn-edit:hover,
+.btn-edit:focus {
+  background: #ffffff;
+  color: #e4442e;
+  border-color: #e4442e;
+}
+
+.text-md-right {
+  text-align: right;
+}
+
+/* Small responsive */
+@media (max-width: 768px) {
+  .profile-image {
+    width: 180px;
+    height: 220px;
+  }
+
+  .text-md-right {
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .account-page .account-header {
+    font-size: 0.85rem;
+  }
+
+  .profile-page-title {
+    font-size: 1.5rem;
+  }
+
+  .profile-image {
+    width: 160px;
+    height: 200px;
+    margin: 0 auto 1.5rem;
+  }
+}
