@@ -61,10 +61,13 @@
 .nav-icon {
   font-size: x-large;
   cursor: pointer;
+  color: #212529; 
+  text-decoration: none; 
+  transition: color 0.2s ease-in-out; 
 }
 
 .nav-icon:hover {
-  color: #f87537;
+  color: #fd7e14; 
 }
 
 /* Profile dropdown */

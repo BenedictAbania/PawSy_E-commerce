@@ -1,9 +1,9 @@
 services:
   app:
     build: .
-    container_name: php-app
+    container_name: PawSy-app
     ports:
-      - "8082:80"
+      - "8083:80"
     volumes:
       - ./src:/var/www/html
     depends_on:
@@ -11,24 +11,24 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: mysql-db
+    container_name: PawSy-db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: testdb
+      MYSQL_DATABASE: Pawsy_db
       MYSQL_USER: user
       MYSQL_PASSWORD: pass
     ports:
-      - "3307:3306"
+      - "3308:3306"
     volumes:
       - db_data:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
+    container_name: PawSyadmin
     restart: always
     ports:
-      - "8081:80"
+      - "8084:80"
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
