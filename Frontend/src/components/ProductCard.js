@@ -1,5 +1,5 @@
-import React from "react";
-import { Card, Button } from "react-bootstrap";
+import React, { useState } from "react";
+import { Card, Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -58,14 +58,20 @@ const ProductCard = ({
     image = "https://placehold.co/400x400/FFF0E6/CCC?text=Image",
   } = product || {};
 
+  // --- NEW: Loading State ---
+  const [isAdding, setIsAdding] = useState(false);
+
   const handleFavoriteClick = (e) => {
     e.preventDefault();
     onToggleFavorite(product);
   };
 
-  const handleCartClick = (e) => {
+  // --- UPDATED: Async Handle Click ---
+  const handleCartClick = async (e) => {
     e.preventDefault();
-    onAddToCart(product);
+    setIsAdding(true); // 1. Start Loading
+    await onAddToCart(product); // 2. Wait for add to finish
+    setIsAdding(false); // 3. Stop Loading
   };
 
   return (
@@ -107,12 +113,28 @@ const ProductCard = ({
           ${Number(price).toFixed(2)}
         </Card.Text>
 
+        {/* --- UPDATED: Button with Spinner --- */}
         <Button
           variant="warning"
           className="mt-auto add-to-cart-btn"
           onClick={handleCartClick}
+          disabled={isAdding} // Disable button while adding
         >
-          Add to Cart
+          {isAdding ? (
+            <>
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+                className="me-2"
+              />
+              Adding...
+            </>
+          ) : (
+            "Add to Cart"
+          )}
         </Button>
       </Card.Body>
     </Card>

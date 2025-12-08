@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ContactMessageController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -20,6 +21,9 @@ Route::apiResource('products', ProductController::class);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::apiResource('users', UserController::class);
+
+// Public Route
+Route::post('/contact', [ContactMessageController::class, 'store']);
 
 // Protected Routes (require login)
 Route::middleware('auth:sanctum')->group(function () {
@@ -35,11 +39,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/cart/count', [CartController::class, 'count']); // Get cart count
 
     // Wishlist Management
-    Route::get('/wishlist', [WishlistController::class,'index']);
-    Route::post('/wishlist', [WishlistController::class,'store']);
-    Route::delete('/wishlist/{id}', [WishlistController::class,'destroy']);
-    
+    Route::get('/wishlist', [WishlistController::class, 'index']);
+    Route::post('/wishlist', [WishlistController::class, 'store']);
+    Route::delete('/wishlist/{id}', [WishlistController::class, 'destroy']);
+
     // Order Management
     Route::post('/orders', [OrderController::class, 'store']); // Place Order
     Route::get('/orders', [OrderController::class, 'index']);  // View History
+
+    // Admin Route (Inside auth middleware)
+    Route::middleware('auth:sanctum')->group(function () {
+        // ... other routes ...
+        Route::get('/admin/messages', [ContactMessageController::class, 'index']);
+    });
 });

@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+// --- MERGED IMPORTS HERE (Fixes your error) ---
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Outlet,
+  Navigate,
+} from "react-router-dom";
 
 import NavBar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -22,16 +29,30 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import MyProfile from "./pages/MyProfile";
 import TrackOrders from "./pages/TrackOrders";
+
+// Admin Imports
 import AdminLayout from "./admin/AdminLayout";
 import Dashboard from "./admin/Dashboard";
 import Products from "./admin/Products";
 import Users from "./admin/Users";
+import AdminMessages from "./admin/AdminMessages"; // Import the new Messages page
 import "./admin/Admin.css";
-import { addToWishlist, removeFromWishlist, getWishlist } from './utils/wishlistHelper';
+
+import {
+  addToWishlist,
+  removeFromWishlist,
+  getWishlist,
+} from "./utils/wishlistHelper";
+
+// --- NEW: Protected Route Component ---
+const ProtectedRoute = ({ children }) => {
+  const currentUser = localStorage.getItem("currentUser");
+  // If no user, redirect to login
+  return currentUser ? children : <Navigate to="/login" replace />;
+};
 
 function App() {
-  
-  //Global cart statw
+  // Global cart state
   const [cartItems, setCartItems] = useState(() => {
     const saved = localStorage.getItem("cartItems");
     return saved ? JSON.parse(saved) : [];
@@ -41,18 +62,22 @@ function App() {
 
   // Fetch Wishlist
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     if (token) {
-      getWishlist().then(items => {
-        setFavorites(items.map(w => w.product));
-      }).catch(()=>{/* ignore */});
+      getWishlist()
+        .then((items) => {
+          setFavorites(items.map((w) => w.product));
+        })
+        .catch(() => {
+          /* ignore */
+        });
     } else {
-      const raw = localStorage.getItem('favorites');
+      const raw = localStorage.getItem("favorites");
       if (raw) setFavorites(JSON.parse(raw));
     }
   }, []);
 
-  //add to cart hadnler
+  // Add to cart handler
   const handleAddToCart = (product, quantity = 1) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
@@ -73,23 +98,27 @@ function App() {
   };
 
   const toggleFavorite = async (product) => {
-    const currentUser = localStorage.getItem('currentUser');
+    const currentUser = localStorage.getItem("currentUser");
     if (!currentUser) {
-      setFavorites((prev) => prev.find(p=>p.id===product.id) ? prev.filter(p=>p.id!==product.id) : [...prev, product]);
+      setFavorites((prev) =>
+        prev.find((p) => p.id === product.id)
+          ? prev.filter((p) => p.id !== product.id)
+          : [...prev, product]
+      );
       return;
     }
 
-    const exists = favorites.some(p => p.id === product.id);
+    const exists = favorites.some((p) => p.id === product.id);
     try {
       if (exists) {
         await removeFromWishlist(product.id);
-        setFavorites(prev => prev.filter(p => p.id !== product.id));
+        setFavorites((prev) => prev.filter((p) => p.id !== product.id));
       } else {
         await addToWishlist(product.id);
-        setFavorites(prev => [...prev, product]);
+        setFavorites((prev) => [...prev, product]);
       }
     } catch (err) {
-      console.error('Wishlist API error', err);
+      console.error("Wishlist API error", err);
     }
   };
 
@@ -108,77 +137,93 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<UserLayout />}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/home" element={<LandingPage />} />
-            <Route path="/aboutUs" element={<AboutUs />} />
-            <Route path="/contact" element={<ContactUs />} />
-            <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/my-profile" element={<MyProfile />} />
-            <Route path="/track-orders" element={<TrackOrders />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/home" element={<LandingPage />} />
+          <Route path="/aboutUs" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/my-profile" element={<MyProfile />} />
+          <Route path="/track-orders" element={<TrackOrders />} />
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <CartPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <CheckoutAddress />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutAddress />} />
-            <Route path="/shipping" element={<Shipping />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/confirmation" element={<div>Order Confirmation Page</div>} />
+          <Route path="/shipping" element={<Shipping />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route
+            path="/confirmation"
+            element={<div>Order Confirmation Page</div>}
+          />
 
-        {/* --- 4. PASS cartItems & onAddToCart TO SHOP --- */}
-        <Route
-          path="/shop"
-          element={
-            <Shop
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-              cartItems={cartItems}
-              onAddToCart={handleAddToCart}
-            />
-          }
-        />
-        <Route
-          path="/shop/:id"
-          element={
-            <ProductDetails
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-              onAddToCart={handleAddToCart} // Pass to details too if needed
-            />
-          }
-        />
-         <Route
-          path="/products" 
-          element={
-            <ProductList
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-              onAddToCart={handleAddToCart}
-            />
-          }
-        />
-         <Route
-          path="/wishlist"
-          element={
-            <Wishlist
-              favorites={favorites}
-              onToggleFavorite={toggleFavorite}
-            />
-          }
-        />
-        
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        
-      </Route> 
+          <Route
+            path="/shop"
+            element={
+              <Shop
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                cartItems={cartItems}
+                onAddToCart={handleAddToCart}
+              />
+            }
+          />
+          <Route
+            path="/shop/:id"
+            element={
+              <ProductDetails
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                onAddToCart={handleAddToCart}
+              />
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              <ProductList
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+                onAddToCart={handleAddToCart}
+              />
+            }
+          />
+          <Route
+            path="/wishlist"
+            element={
+              <Wishlist
+                favorites={favorites}
+                onToggleFavorite={toggleFavorite}
+              />
+            }
+          />
 
-      <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} /> 
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Route>
+
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="products" element={<Products />} />
           <Route path="users" element={<Users />} />
-      </Route>
-
-    </Routes>
-  </BrowserRouter>
-);
+          {/* --- NEW: Admin Messages Route --- */}
+          <Route path="messages" element={<AdminMessages />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;

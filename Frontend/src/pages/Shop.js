@@ -62,16 +62,16 @@ const Shop = ({
   const onToggleFavorite = globalToggleFavorite || localToggleFavorite;
 
   // --- PRODUCT DATA STATE ---
-  const [allProducts, setAllProducts] = useState([]); 
-  const [products, setProducts] = useState([]); 
-  const [isLoading, setIsLoading] = useState(true); 
+  const [allProducts, setAllProducts] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [filters, setFilters] = useState({
     petType: initialPet,
     category: initialCategory,
     brand: "All",
     minPrice: 0,
-    maxPrice: 200, 
+    maxPrice: 200,
   });
 
   // --- CART LOGIC ---
@@ -79,11 +79,11 @@ const Shop = ({
     const saved = localStorage.getItem("cartItems");
     return saved ? JSON.parse(saved) : [];
   });
-  
+
   // Cart Alert State
   const [showCartAlert, setShowCartAlert] = useState(false);
   const [alertProduct, setAlertProduct] = useState("");
-  
+
   // --- NEW: WISHLIST ALERT STATE ---
   const [showWishlistAlert, setShowWishlistAlert] = useState(false);
   const [wishlistAlertMessage, setWishlistAlertMessage] = useState("");
@@ -97,8 +97,8 @@ const Shop = ({
     if (!path) return "https://placehold.co/400x400/FFF0E6/CCC?text=No+Image";
     if (path.startsWith("data:")) return path;
     if (path.startsWith("http")) return path;
-    if (path.startsWith("/assets")) return path; 
-    return `${IMAGE_BASE_URL}${path}`; 
+    if (path.startsWith("/assets")) return path;
+    return `${IMAGE_BASE_URL}${path}`;
   };
 
   // 4. FETCH PRODUCTS FROM API
@@ -112,7 +112,7 @@ const Shop = ({
           image: getImageUrl(p.image),
         }));
         setAllProducts(formattedData);
-        setProducts(formattedData); 
+        setProducts(formattedData);
         setIsLoading(false);
       })
       .catch((err) => {
@@ -151,8 +151,8 @@ const Shop = ({
 
     // Determine message based on CURRENT state (before toggle)
     const isAlreadyFavorite = favorites.some((fav) => fav.id === product.id);
-    const message = isAlreadyFavorite 
-      ? `Removed ${product.name} from Wishlist.` 
+    const message = isAlreadyFavorite
+      ? `Removed ${product.name} from Wishlist.`
       : `Added ${product.name} to Wishlist!`;
 
     // Perform the action
@@ -185,7 +185,18 @@ const Shop = ({
   };
 
   useEffect(() => {
-    let filtered = allProducts; 
+    let filtered = allProducts;
+
+    const searchQuery = queryParams.get("search");
+    if (searchQuery) {
+      const lowerQuery = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(lowerQuery) ||
+          p.description?.toLowerCase().includes(lowerQuery) ||
+          p.brand?.toLowerCase().includes(lowerQuery)
+      );
+    }
 
     if (filters.petType !== "All") {
       filtered = filtered.filter((p) => p.petType === filters.petType);
@@ -204,7 +215,7 @@ const Shop = ({
     );
 
     setProducts(filtered);
-  }, [filters, allProducts]);
+  }, [filters, allProducts, location.search]);
 
   useEffect(() => {
     const petFromQuery = queryParams.get("petType") || "All";

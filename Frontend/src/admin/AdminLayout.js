@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Nav, Dropdown, Image } from "react-bootstrap";
+import { Container, Row, Col, Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTachometerAlt,
@@ -9,8 +9,9 @@ import {
   faSignOutAlt,
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 
-// CSS for Sidebar (Keep your existing CSS)
+// CSS for Sidebar
 import "./AdminLayout.css";
 
 const AdminLayout = () => {
@@ -23,7 +24,7 @@ const AdminLayout = () => {
     if (user && user.role === "admin") {
       setAdminUser(user);
     } else {
-      // Redirect if not authorized (optional security check)
+      // Optional: Redirect if not authorized
       // navigate('/');
     }
   }, [navigate]);
@@ -39,12 +40,14 @@ const AdminLayout = () => {
   return (
     <Container fluid className="p-0 overflow-hidden">
       <Row className="flex-nowrap g-0">
-        {/* Sidebar (no changes here) */}
+        {/* Sidebar */}
         <Col
           md={2}
           className="sidebar bg-dark text-white min-vh-100 d-flex flex-column p-3 sticky-top"
         >
           <h4 className="text-center fw-bold mb-4 text-orange">PawSy Admin</h4>
+
+          {/* --- NAV SECTION --- */}
           <Nav className="flex-column flex-grow-1">
             <Nav.Item className="mb-2">
               <NavLink
@@ -56,10 +59,11 @@ const AdminLayout = () => {
                   }`
                 }
               >
-                <FontAwesomeIcon icon={faTachometerAlt} className="me-3" />{" "}
+                <FontAwesomeIcon icon={faTachometerAlt} className="me-3" />
                 Dashboard
               </NavLink>
             </Nav.Item>
+
             <Nav.Item className="mb-2">
               <NavLink
                 to="/admin/products"
@@ -72,6 +76,7 @@ const AdminLayout = () => {
                 <FontAwesomeIcon icon={faBoxOpen} className="me-3" /> Products
               </NavLink>
             </Nav.Item>
+
             <Nav.Item className="mb-2">
               <NavLink
                 to="/admin/users"
@@ -84,6 +89,21 @@ const AdminLayout = () => {
                 <FontAwesomeIcon icon={faUsers} className="me-3" /> Users
               </NavLink>
             </Nav.Item>
+
+            {/* --- FIX: MOVED INSIDE <Nav> --- */}
+            <Nav.Item className="mb-2">
+              <NavLink
+                to="/admin/messages"
+                className={({ isActive }) =>
+                  `nav-link text-white d-flex align-items-center p-2 rounded ${
+                    isActive ? "active-link" : ""
+                  }`
+                }
+              >
+                <FontAwesomeIcon icon={faEnvelope} className="me-3" /> Messages
+              </NavLink>
+            </Nav.Item>
+            {/* ------------------------------- */}
           </Nav>
 
           {/* 3. Admin Profile & Logout Section */}
@@ -115,7 +135,7 @@ const AdminLayout = () => {
           </div>
         </Col>
 
-        {/* Main Content (no changes) */}
+        {/* Main Content */}
         <Col
           md={10}
           className="main-content bg-light p-4 overflow-auto"
