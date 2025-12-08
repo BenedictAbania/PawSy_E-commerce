@@ -46,10 +46,20 @@ Route::middleware('auth:sanctum')->group(function () {
     // Order Management
     Route::post('/orders', [OrderController::class, 'store']); // Place Order
     Route::get('/orders', [OrderController::class, 'index']);  // View History
+    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel']);
+    Route::post('/orders/{id}/return', [OrderController::class, 'returnOrder']);
+
+    // Payment Methods
+    Route::get('/payment-methods', [App\Http\Controllers\PaymentMethodController::class, 'index']);
+    Route::post('/payment-methods', [App\Http\Controllers\PaymentMethodController::class, 'store']);
+    Route::delete('/payment-methods/{id}', [App\Http\Controllers\PaymentMethodController::class, 'destroy']);
+    
+    Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store']);
 
     // Admin Route (Inside auth middleware)
     Route::middleware('auth:sanctum')->group(function () {
         // ... other routes ...
         Route::get('/admin/messages', [ContactMessageController::class, 'index']);
+        Route::get('/admin/stats', [App\Http\Controllers\DashboardController::class, 'stats']);
     });
 });

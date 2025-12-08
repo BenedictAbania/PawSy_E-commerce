@@ -28,4 +28,9 @@ class Product extends Model
         'is_featured' => 'boolean',
         'is_best_seller' => 'boolean',
     ];
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 }

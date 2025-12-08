@@ -15,20 +15,20 @@ import "../styles/ProductCard.css";
 
 // Helper component for star ratings (reusable)
 const StarRating = ({ rating = 0, reviewCount }) => {
-  const numRating = Number(rating); // Ensure it's a number
+  const numRating = Number(rating) || 0; // Ensure it's a number
   const stars = [];
   const fullStars = Math.floor(numRating);
   const halfStar = numRating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
 
   for (let i = 0; i < fullStars; i++) {
-    stars.push(<FontAwesomeIcon icon={faStar} key={`full-${i}`} />);
+    stars.push(<FontAwesomeIcon icon={faStar} key={`full-${i}`} className="text-warning" />);
   }
   if (halfStar) {
-    stars.push(<FontAwesomeIcon icon={faStarHalfAlt} key="half" />);
+    stars.push(<FontAwesomeIcon icon={faStarHalfAlt} key="half" className="text-warning" />);
   }
   for (let i = 0; i < emptyStars; i++) {
-    stars.push(<FontAwesomeIcon icon={faStarEmpty} key={`empty-${i}`} />);
+    stars.push(<FontAwesomeIcon icon={faStarEmpty} key={`empty-${i}`} className="text-warning" />);
   }
 
   const ratingText = reviewCount
@@ -37,7 +37,7 @@ const StarRating = ({ rating = 0, reviewCount }) => {
 
   return (
     <div className="star-rating">
-      {stars} <span className="rating-value"> {ratingText}</span>
+      {stars} <span className="rating-value text-muted ms-1" style={{ fontSize: '0.8rem' }}>{ratingText}</span>
     </div>
   );
 };
@@ -48,17 +48,26 @@ const ProductCard = ({
   isFavorite,
   onToggleFavorite,
 }) => {
+  // --- FIX: Handle both React naming and Laravel naming ---
   const {
     id = "N/A",
     name = "Product Name",
     category = "Category",
-    price = 0, // Default to 0
-    rating = 0,
-    reviewCount,
+    price = 0,
     image = "https://placehold.co/400x400/FFF0E6/CCC?text=Image",
+    // 1. Try standard props
+    rating,
+    reviewCount, 
+    // 2. Try Laravel props (The Fix)
+    reviews_avg_rating, 
+    reviews_count
   } = product || {};
 
-  // --- NEW: Loading State ---
+  // 3. Determine which one to use
+  const effectiveRating = rating || reviews_avg_rating || 0;
+  const effectiveCount = reviewCount || reviews_count || 0;
+
+  // --- Loading State ---
   const [isAdding, setIsAdding] = useState(false);
 
   const handleFavoriteClick = (e) => {
@@ -66,32 +75,37 @@ const ProductCard = ({
     onToggleFavorite(product);
   };
 
-  // --- UPDATED: Async Handle Click ---
   const handleCartClick = async (e) => {
     e.preventDefault();
-    setIsAdding(true); // 1. Start Loading
-    await onAddToCart(product); // 2. Wait for add to finish
-    setIsAdding(false); // 3. Stop Loading
+    setIsAdding(true);
+    await onAddToCart(product);
+    setIsAdding(false);
   };
 
   return (
-    <Card className="h-100 product-card-unified">
-      <Link to={`/shop/${id}`} className="product-card-link">
-        <Card.Img
-          variant="top"
-          src={image}
-          alt={name}
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src =
-              "https://placehold.co/400x400/FFF0E6/CCC?text=Image+Not+Found";
-          }}
-        />
+    <Card className="h-100 product-card-unified border-0 shadow-sm">
+      <Link to={`/shop/${id}`} className="product-card-link text-decoration-none">
+        <div className="position-relative" style={{ height: '250px', overflow: 'hidden', padding: '20px', backgroundColor: '#f9f9f9' }}>
+          <Card.Img
+            variant="top"
+            src={image}
+            alt={name}
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src =
+                "https://placehold.co/400x400/FFF0E6/CCC?text=Image+Not+Found";
+            }}
+          />
+        </div>
       </Link>
       <Card.Body className="d-flex flex-column">
+        {/* Added Category Label for consistency */}
+        <div className="text-muted small mb-1 text-uppercase">{category}</div>
+
         <div className="d-flex justify-content-between align-items-start mb-2">
-          <Card.Title className="product-card-title mb-0">
-            <Link to={`/shop/${id}`} className="product-card-link">
+          <Card.Title className="product-card-title mb-0" style={{ fontSize: '1rem', fontWeight: 'bold' }}>
+            <Link to={`/shop/${id}`} className="product-card-link text-dark text-decoration-none">
               {name}
             </Link>
           </Card.Title>
@@ -102,23 +116,23 @@ const ProductCard = ({
           >
             <FontAwesomeIcon
               icon={isFavorite ? faHeartSolid : faHeartRegular}
+              className={isFavorite ? "text-danger" : "text-muted"}
             />
           </Button>
         </div>
 
-        <StarRating rating={rating} reviewCount={reviewCount} />
+        {/* --- USE THE FIXED VARIABLES HERE --- */}
+        <StarRating rating={effectiveRating} reviewCount={effectiveCount} />
 
-        {/* FIX: Ensure price is a Number before calling toFixed */}
-        <Card.Text className="h5 product-price my-2">
+        <Card.Text className="h5 product-price my-2 text-primary fw-bold">
           ${Number(price).toFixed(2)}
         </Card.Text>
 
-        {/* --- UPDATED: Button with Spinner --- */}
         <Button
           variant="warning"
-          className="mt-auto add-to-cart-btn"
+          className="mt-auto add-to-cart-btn text-white fw-bold"
           onClick={handleCartClick}
-          disabled={isAdding} // Disable button while adding
+          disabled={isAdding}
         >
           {isAdding ? (
             <>

@@ -14,6 +14,7 @@ import {
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTag } from "@fortawesome/free-solid-svg-icons";
+import CheckoutSteps from '../components/CheckoutSteps'; // <--- Added Import
 import "../styles/Payment.css";
 
 const formatCurrency = (v) => `$${Number(v || 0).toFixed(2)}`;
@@ -83,8 +84,8 @@ export default function Payment() {
     const savedShipCost = localStorage.getItem("shippingCost");
     if (savedShipCost) setShippingCost(Number(savedShipCost) || 0);
 
-    const savedMethod = localStorage.getItem("shippingMethod");
-    // optional: if you want to ensure user went through shipping
+    // Optional: Validate flow
+    // const savedMethod = localStorage.getItem("shippingMethod");
     // if (!savedMethod) navigate("/shipping");
   }, [navigate]);
 
@@ -116,7 +117,6 @@ export default function Payment() {
 
     const selectedMethod = paymentMethods.find((p) => p.id === selectedId);
 
-    //
     const payload = {
       items: cartItems.map((item) => ({
         id: item.product_id ?? item.id, 
@@ -167,8 +167,6 @@ export default function Payment() {
     }
 
     const lastFour = (newCard.cardNumber || "").slice(-4);
-
-    // Convert "YYYY-MM" -> "MM/YY"
     const [yyyy, mm] = newCard.expiryDate.split("-");
     const expiry = `${mm}/${yyyy.slice(-2)}`;
 
@@ -184,34 +182,23 @@ export default function Payment() {
       lastFour,
       expiry,
       code: newCard.type.toLowerCase(),
-      cardName: newCard.cardName, // optional display
+      cardName: newCard.cardName,
     };
 
     setPaymentMethods((prev) => [...prev, newMethod]);
     setSelectedId(newMethod.id);
-
-    // reset modal fields
     setNewCard({ type: "Visa", cardName: "", cardNumber: "", expiryDate: "" });
     setShowModal(false);
   };
 
   return (
     <Container className="payment-container my-5">
+      {/* 1. Added Checkout Steps */}
+      <CheckoutSteps activeStep="payment" />
+
       <Row>
         <Col lg={8}>
-          <div className="steps-container">
-            <span className="step" onClick={() => navigate("/checkout")}>
-              Address
-            </span>
-            <span className="step-separator">&gt;</span>
-            <span className="step" onClick={() => navigate("/shipping")}>
-              Shipping
-            </span>
-            <span className="step-separator">&gt;</span>
-            <span className="step-active">Payment</span>
-          </div>
-
-          <h3 className="mt-4 mb-3">Payment Method</h3>
+          <h3 className="mb-3">Payment Method</h3>
 
           {paymentMethods.map((method) => (
             <Card
@@ -253,32 +240,32 @@ export default function Payment() {
         </Col>
 
         <Col lg={4}>
-          <aside className="order-summary">
-            <h3>Order Summary</h3>
+          {/* 2. Updated Summary Styling to match Address Page */}
+          <aside className="order-summary p-4 bg-white rounded shadow-sm border">
+            <h4 className="mb-4">Order Summary</h4>
 
-            <div className="summary-line">
+            <div className="summary-line d-flex justify-content-between mb-2">
               <span>Price</span>
               <span>{formatCurrency(subtotal)}</span>
             </div>
 
-            <div className="summary-line">
+            <div className="summary-line d-flex justify-content-between mb-2">
               <span>Discount</span>
               <span>− {formatCurrency(discount)}</span>
             </div>
 
-            <div className="summary-line">
+            <div className="summary-line d-flex justify-content-between mb-2">
               <span>Shipping</span>
               <span>{shippingCost === 0 ? "Free" : formatCurrency(shippingCost)}</span>
             </div>
 
             <hr />
 
-            <div className="summary-total">
+            <div className="summary-total d-flex justify-content-between mb-4 fw-bold fs-5">
               <span>TOTAL</span>
               <span>{formatCurrency(finalTotal)}</span>
             </div>
 
-            {/* Keep coupon UI like your layout */}
             <InputGroup className="mb-3 mt-3">
               <Form.Control
                 placeholder="Coupon Code"
@@ -292,7 +279,7 @@ export default function Payment() {
 
             <Button
               variant="warning"
-              className="w-100 checkout-btn"
+              className="w-100 checkout-btn fw-bold text-white"
               onClick={handlePlaceOrder}
               disabled={isSubmitting}
             >
@@ -302,12 +289,11 @@ export default function Payment() {
         </Col>
       </Row>
 
-      {/* Modal UI (Add only) */}
+      {/* Modal UI */}
       <Modal show={showModal} onHide={handleModalClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>Add New Payment Method</Modal.Title>
         </Modal.Header>
-
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
@@ -349,7 +335,6 @@ export default function Payment() {
             </Form.Group>
           </Form>
         </Modal.Body>
-
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>
             Close

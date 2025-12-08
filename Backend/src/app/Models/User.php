@@ -6,12 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; // <--- 1. ADD THIS IMPORT
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable; // <--- 2. ADD THIS TRAIT
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -49,7 +49,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    // Relationships
+
+    // --- Relationships ---
+
     public function cart() {
         return $this->hasMany(Cart::class);
     }
@@ -60,5 +62,10 @@ class User extends Authenticatable
 
     public function orders() {
         return $this->hasMany(Order::class);
+    }
+
+    // --- THIS WAS MISSING ---
+    public function paymentMethods() {
+        return $this->hasMany(PaymentMethod::class);
     }
 }

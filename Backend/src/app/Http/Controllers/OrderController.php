@@ -60,6 +60,58 @@ class OrderController extends Controller
         });
     }
 
+    // Add this function to OrderController class
+    public function cancel(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        // 1. Security Check: Does this order belong to the logged-in user?
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // 2. Logic Check: Is it too late to cancel?
+        if ($order->status !== 'pending') {
+            return response()->json([
+                'message' => 'Order cannot be cancelled. It is currently ' . $order->status
+            ], 400);
+        }
+
+        // 3. Process Cancellation
+        $order->status = 'cancelled';
+        $order->save();
+
+        // Optional: You could restore product stock here if you wanted to.
+
+        return response()->json([
+            'message' => 'Order cancelled successfully', 
+            'status' => 'cancelled'
+        ]);
+    }
+
+    // Add this to OrderController.php
+    public function returnOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Logic: You can usually only return items that have been Delivered
+        // For testing purposes, you might want to comment out this check if you don't have 'delivered' orders yet.
+        if ($order->status !== 'delivered') {
+             return response()->json([
+                 'message' => 'Order cannot be returned yet. Wait until it is delivered.'
+             ], 400);
+        }
+
+        $order->status = 'returned';
+        $order->save();
+
+        return response()->json(['message' => 'Return requested successfully', 'status' => 'returned']);
+    }
+
     //Get User's Orders
     public function index(Request $request)
     {

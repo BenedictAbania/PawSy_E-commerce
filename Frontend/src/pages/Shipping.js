@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Card, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTag } from "@fortawesome/free-solid-svg-icons";
+import CheckoutSteps from '../components/CheckoutSteps'; // <--- Added Import
 import "../styles/Shipping.css";
 
 const formatCurrency = (v) => `$${Number(v || 0).toFixed(2)}`;
@@ -41,7 +42,7 @@ export default function Shipping() {
     if (saved) setCartItems(JSON.parse(saved));
   }, []);
 
-  //Keep displaying the saved address
+  // Keep displaying the saved address
   const shippingAddress = localStorage.getItem("shippingAddress") || "";
 
   const [shippingLocation, setShippingLocation] = useState(
@@ -103,18 +104,13 @@ export default function Shipping() {
   };
 
   return (
-    <Container className="shipping-container my-5">
+    <Container className="my-5">
+      {/* 1. Added Checkout Steps */}
+      <CheckoutSteps activeStep="shipping" />
+
       <Row>
         <Col lg={8}>
-          <div className="steps-container">
-            <span className="step" onClick={() => navigate("/checkout")}>Address</span>
-            <span className="step-separator">&gt;</span>
-            <span className="step-active">Shipping</span>
-            <span className="step-separator">&gt;</span>
-            <span className="step" onClick={() => navigate("/payment")}>Payment</span>
-          </div>
-
-          <h3 className="mt-4 mb-3">Shipment Method</h3>
+          <h3 className="mb-3">Shipment Method</h3>
 
           {/* Address display */}
           <Card className="mb-3">
@@ -239,25 +235,35 @@ export default function Shipping() {
         </Col>
 
         <Col lg={4}>
-          <aside className="order-summary">
-            <h3>Order Summary</h3>
+          {/* 2. Updated Summary Styling to match Address Page */}
+          <aside className="order-summary p-4 bg-white rounded shadow-sm border">
+            <h4 className="mb-4">Order Summary</h4>
 
-            <div className="summary-line"><span>Subtotal</span><span>{formatCurrency(subtotal)}</span></div>
-            <div className="summary-line"><span>Discount</span><span>− {formatCurrency(discount)}</span></div>
+            <div className="summary-line d-flex justify-content-between mb-2">
+              <span>Subtotal</span>
+              <span>{formatCurrency(subtotal)}</span>
+            </div>
+            <div className="summary-line d-flex justify-content-between mb-2">
+              <span>Discount</span>
+              <span>− {formatCurrency(discount)}</span>
+            </div>
 
-            <div className="summary-line">
+            <div className="summary-line d-flex justify-content-between mb-2">
               <span>Shipping</span>
               <span>
                 {shippingCost === null
                   ? <span className="text-danger">Unavailable</span>
                   : shippingCost === 0
-                    ? <span className="free-shipping">Free</span>
+                    ? <span className="free-shipping text-success">Free</span>
                     : formatCurrency(shippingCost)}
               </span>
             </div>
 
             <hr />
-            <div className="summary-total"><span>TOTAL</span><span>{formatCurrency(total)}</span></div>
+            <div className="summary-total d-flex justify-content-between mb-4 fw-bold fs-5">
+              <span>Total</span>
+              <span>{formatCurrency(total)}</span>
+            </div>
 
             <InputGroup className="mb-3">
               <Form.Control
@@ -270,7 +276,7 @@ export default function Shipping() {
               </Button>
             </InputGroup>
 
-            <Button variant="warning" className="w-100 checkout-btn" onClick={handleContinue}>
+            <Button variant="warning" className="w-100 checkout-btn fw-bold text-white" onClick={handleContinue}>
               Continue to Payment
             </Button>
           </aside>

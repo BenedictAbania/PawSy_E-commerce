@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    // 1. GET /api/products (Fetch all)
+    // 1. GET /api/products (Fetch all with rating stats)
     public function index()
     {
-        return Product::all();
+        return Product::withAvg('reviews', 'rating')
+                      ->withCount('reviews')
+                      ->get();
     }
 
     // 2. POST /api/products (Create new)
@@ -26,19 +28,34 @@ class ProductController extends Controller
             'petType' => 'nullable|string',
             'is_featured' => 'boolean',
             'is_best_seller' => 'boolean',
-            'image' => 'nullable', // <--- CHANGED: Removed '|image' to allow strings
+            'image' => 'nullable', // Allow string or file
         ]);
 
-        // Handle Image Upload (If it's a file)
+        // Handle Image Upload
         if ($request->hasFile('image')) {
+            // Store in storage/app/public/products
             $path = $request->file('image')->store('products', 'public');
+            // Save as accessible URL path
             $validated['image'] = '/storage/' . $path;
         }
-        // If it's a String URL, it's already in $validated['image'], so we do nothing.
 
         $product = Product::create($validated);
 
         return response()->json($product, 201);
+    }
+
+    // 5. GET /api/products/{id} (Fetch single product with rating stats)
+    public function show($id)
+    {
+        $product = Product::withAvg('reviews', 'rating')
+                          ->withCount('reviews')
+                          ->find($id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+
+        return response()->json($product);
     }
 
     // 3. PUT /api/products/{id} (Update existing)
@@ -55,7 +72,7 @@ class ProductController extends Controller
             'petType' => 'nullable|string',
             'is_featured' => 'boolean',
             'is_best_seller' => 'boolean',
-            'image' => 'nullable', // <--- CHANGED: Removed '|image'
+            'image' => 'nullable',
         ]);
 
         if ($request->hasFile('image')) {
@@ -64,6 +81,7 @@ class ProductController extends Controller
                 $oldPath = str_replace('/storage/', '', $product->image);
                 Storage::disk('public')->delete($oldPath);
             }
+            
             $path = $request->file('image')->store('products', 'public');
             $validated['image'] = '/storage/' . $path;
         }
@@ -78,7 +96,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        if ($product->image) {
+        if ($product->image && str_contains($product->image, '/storage/')) {
             $oldPath = str_replace('/storage/', '', $product->image);
             Storage::disk('public')->delete($oldPath);
         }

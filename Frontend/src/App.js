@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-// --- MERGED IMPORTS HERE (Fixes your error) ---
 import {
   BrowserRouter,
   Routes,
@@ -16,7 +15,7 @@ import LandingPage from "./pages/LandingPage";
 import Shop from "./pages/Shop";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
-import Account from "./pages/Account";
+import Account from "./pages/Account"; // If unused, you can remove
 import EditProfile from "./pages/EditProfile";
 import CartPage from "./pages/CartPage";
 import CheckoutAddress from "./pages/Checkout_Address";
@@ -29,13 +28,16 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import MyProfile from "./pages/MyProfile";
 import TrackOrders from "./pages/TrackOrders";
+import MyCancellations from "./pages/MyCancellations";
+import MyReturns from './pages/MyReturns';
+import MyPaymentOptions from './pages/MyPaymentOptions'; 
 
 // Admin Imports
 import AdminLayout from "./admin/AdminLayout";
 import Dashboard from "./admin/Dashboard";
 import Products from "./admin/Products";
 import Users from "./admin/Users";
-import AdminMessages from "./admin/AdminMessages"; // Import the new Messages page
+import AdminMessages from "./admin/AdminMessages"; 
 import "./admin/Admin.css";
 
 import {
@@ -44,10 +46,9 @@ import {
   getWishlist,
 } from "./utils/wishlistHelper";
 
-// --- NEW: Protected Route Component ---
+// --- Protected Route Component ---
 const ProtectedRoute = ({ children }) => {
   const currentUser = localStorage.getItem("currentUser");
-  // If no user, redirect to login
   return currentUser ? children : <Navigate to="/login" replace />;
 };
 
@@ -122,7 +123,7 @@ function App() {
     }
   };
 
-  // Pass cartCount TO NAVBAR
+  // --- USER LAYOUT (The Sandwich Wrapper) ---
   const UserLayout = () => (
     <>
       <NavBar favoritesCount={favorites.length} cartCount={cartItems.length} />
@@ -136,38 +137,17 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        
+        {/* === MAIN CUSTOMER ROUTES (With Navbar & Footer) === */}
         <Route element={<UserLayout />}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/home" element={<LandingPage />} />
           <Route path="/aboutUs" element={<AboutUs />} />
           <Route path="/contact" element={<ContactUs />} />
-          <Route path="/edit-profile" element={<EditProfile />} />
-          <Route path="/my-profile" element={<MyProfile />} />
-          <Route path="/track-orders" element={<TrackOrders />} />
-          <Route
-            path="/cart"
-            element={
-              <ProtectedRoute>
-                <CartPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute>
-                <CheckoutAddress />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route path="/shipping" element={<Shipping />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route
-            path="/confirmation"
-            element={<div>Order Confirmation Page</div>}
-          />
-
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          
+          {/* Shop Routes */}
           <Route
             path="/shop"
             element={
@@ -209,18 +189,70 @@ function App() {
             }
           />
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-        </Route>
+          {/* Checkout Flow (Protected) */}
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <CartPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <CheckoutAddress />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/shipping" element={<Shipping />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/confirmation" element={<div>Order Confirmation Page</div>} />
 
+          {/* Account Pages (Protected) */}
+          <Route path="/my-profile" element={<MyProfile />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/track-orders" element={<TrackOrders />} />
+
+          {/* --- MOVED THESE INSIDE USERLAYOUT --- */}
+          <Route 
+            path="/cancellations" 
+            element={
+              <ProtectedRoute>
+                <MyCancellations />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/returns" 
+            element={
+              <ProtectedRoute>
+                <MyReturns />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/my-payment-options" 
+            element={
+              <ProtectedRoute>
+                <MyPaymentOptions />
+              </ProtectedRoute>
+            } 
+          />
+        </Route>
+        {/* === END CUSTOMER ROUTES === */}
+
+
+        {/* === ADMIN ROUTES (Different Layout) === */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="products" element={<Products />} />
           <Route path="users" element={<Users />} />
-          {/* --- NEW: Admin Messages Route --- */}
           <Route path="messages" element={<AdminMessages />} />
         </Route>
+
       </Routes>
     </BrowserRouter>
   );

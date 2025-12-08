@@ -63,6 +63,12 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    // Add this inside your User class
+    public function paymentMethods()
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
+
     // 4. DELETE /api/users/{id} (Delete)
     public function destroy($id)
     {

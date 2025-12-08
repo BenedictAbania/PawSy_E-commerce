@@ -14,7 +14,12 @@ class DatabaseSeeder extends Seeder
         // This runs the file that creates your Admin account
         $this->call(AdminUserSeeder::class);
 
-        // This runs the file that adds your 6 mock products
-        // $this->call(ProductSeeder::class);
+        $this->call(ProductSeeder::class);
+
+        $this->call([
+            AdminUserSeeder::class,    // 1. Create User
+            ProductSeeder::class,      // 2. Create Products
+            PaymentMethodSeeder::class // 3. Create Cards for that User
+        ]);
     }
 }

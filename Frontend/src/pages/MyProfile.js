@@ -110,7 +110,7 @@ const MyProfile = () => {
               <strong>Manage My Account</strong>
               <ul>
                 <li className="active"><Link to="/account">My Profile</Link></li>
-                <li><Link to="/payment">My Payment Options</Link></li>
+                <li><Link to="/my-payment-options">My Payment Options</Link></li>
               </ul>
             </div>
             <div className="nav-section">
@@ -120,9 +120,6 @@ const MyProfile = () => {
                 <li><Link to="/cancellations">My Cancellations</Link></li>
                 <li><Link to="/track-orders">Track Orders</Link></li>
               </ul>
-            </div>
-            <div className="nav-section">
-              <strong>My Wishlist</strong>
             </div>
           </nav>
         </aside>
