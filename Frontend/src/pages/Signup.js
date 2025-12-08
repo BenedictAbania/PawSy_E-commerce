@@ -29,7 +29,9 @@ function Signup() {
     try {
       const response = await fetch(`${API_URL}/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 
+        "Accept": "application/json"
+         },
         body: JSON.stringify({ name: fullname, email, password }),
       });
 

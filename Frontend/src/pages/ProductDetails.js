@@ -4,11 +4,12 @@ import { Container, Row, Col, Button, Image, Alert, Breadcrumb, Form } from 'rea
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faStarHalfAlt, faHeart as faHeartSolid, faShoppingCart, faChevronLeft, faShareAlt } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarEmpty, faHeart as faHeartRegular } from '@fortawesome/free-regular-svg-icons';
-// Assuming products.json is in src/data
-import productsData from '../data/products.json';
-import '../styles/ProductDetails.css'; // We'll create this next
+import { addToCart } from '../utils/cartHelper';
+import '../styles/ProductDetails.css'; 
 
-// --- Star Rating Component (copied from ProductCard for consistency) ---
+const API_URL = 'http://localhost:8083/api/products';
+const IMAGE_BASE_URL = 'http://localhost:8083';
+
 const StarRating = ({ rating, reviewCount }) => {
   const stars = [];
   const fullStars = Math.floor(rating);
@@ -32,7 +33,6 @@ const StarRating = ({ rating, reviewCount }) => {
     </div>
   );
 };
-// --- End Star Rating Component ---
 
 
 // --- Main Component ---
@@ -45,15 +45,40 @@ const ProductDetails = ({ favorites, onToggleFavorite }) => {
   const [alertProduct, setAlertProduct] = useState("");
   const [product, setProduct] = useState(null); // State to hold the found product
 
-  // Find the product when the component mounts or ID changes
+  // Helper to format image URLs
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('data:')) return path;
+    if (path.startsWith('http')) return path;
+    if (path.startsWith('/assets')) return path;
+    return `${IMAGE_BASE_URL}${path}`;
+  };
+
+  // Fetch product from API when the component mounts or ID changes
   useEffect(() => {
-    const foundProduct = productsData.find((p) => p.id === parseInt(id));
-    setProduct(foundProduct);
-    if (foundProduct && foundProduct.colors && foundProduct.colors.length > 0) {
-      setSelectedColor(foundProduct.colors[0]); // Select first color by default
-    }
-    setQuantity(1); // Reset quantity when product changes
-  }, [id]); // Re-run effect if the ID in the URL changes
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`${API_URL}/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          // Format the image URL
+          const formattedProduct = {
+            ...data,
+            image: getImageUrl(data.image)
+          };
+          setProduct(formattedProduct);
+          if (data.colors && data.colors.length > 0) {
+            setSelectedColor(data.colors[0]);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching product:', err);
+      }
+      setQuantity(1);
+    };
+    
+    fetchProduct();
+  }, [id]);
 
   // Loading or Not Found state
   if (!product) {
@@ -73,14 +98,20 @@ const ProductDetails = ({ favorites, onToggleFavorite }) => {
   const increaseQuantity = () => setQuantity((prev) => prev + 1);
   const decreaseQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    const currentUser = localStorage.getItem("currentUser");
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+
     console.log(`Added ${quantity} of ${product.name} (Color: ${selectedColor}) to cart`);
-    setAlertProduct(product.name);
+    const result = await addToCart(product, quantity);
+    setAlertProduct(result.message);
     setShowCartAlert(true);
     setTimeout(() => {
       setShowCartAlert(false);
     }, 3000);
-    // Add to global cart state here in a real app
   };
 
   // --- Dummy Features (replace with real data if available) ---

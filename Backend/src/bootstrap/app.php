@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Handle unauthenticated redirects
+        $middleware->redirectGuestsTo(function (Request $request) {
+            if ($request->is('api/*')) {
+                return null; // Do not redirect API requests, let it 401
+            }
+            return route('login'); // Redirect web requests to login
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

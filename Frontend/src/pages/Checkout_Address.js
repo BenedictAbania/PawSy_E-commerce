@@ -1,83 +1,91 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Card, Form, Modal } from "react-bootstrap";
-import "../styles/Checkout-Address.css"; // We will update this file
+import "../styles/Checkout-Address.css";
 
-// --- Helper Functions (unchanged) ---
-const formatCurrency = (v) => `$${Number(v).toFixed(2)}`;
-const estimatedDelivery = (daysFromNow = 9) => {
+// --- Helper Functions ---
+const formatCurrency = (v) => `$${Number(v || 0).toFixed(2)}`;
+const estimatedDelivery = (daysFromNow = 5) => {
   const d = new Date();
   d.setDate(d.getDate() + daysFromNow);
-  return d.toLocaleDateString(undefined, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  return d.toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" });
 };
 
-// --- Initial Data (unchanged) ---
-const initialAddresses = [
-  {
-    name: "Huzefa Bagwala",
-    label: "HOME",
-    address: "1131 Dusty Townline, Jacksonville, TX 40322",
-    contact: "(+936) 361-0310",
-  },
-  {
-    name: "IndiaTech",
-    label: "OFFICE",
-    address: "1219 Harvest Path, Jacksonville, TX 40326",
-    contact: "(+936) 361-0310",
-  },
-];
-
-const emptyAddress = {
-  name: "",
-  label: "HOME",
-  address: "",
-  contact: "",
-};
+const emptyAddress = { name: "", label: "HOME", address: "", contact: "" };
 
 export default function CheckoutAddress() {
-  const location = useLocation();
   const navigate = useNavigate();
-  const passedCart = (location.state && location.state.cartItems) || [];
-  
-  const [addresses, setAddresses] = useState(initialAddresses);
-  const [selectedIdx, setSelectedIdx] = useState(0);
 
-  // --- Modal State ---
+  const [addresses, setAddresses] = useState([]);
+  const [selectedIdx, setSelectedIdx] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+
+  // Modal state
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(emptyAddress);
+  const [editingIdx, setEditingIdx] = useState(null);
 
-  // --- Cart Calculations (unchanged) ---
-  const price = passedCart.length
-    ? passedCart.reduce((s, i) => s + i.price * i.quantity, 0)
-    : 319.98;
-  const discount = price * 0.1;
+  useEffect(() => {
+    const savedCart = localStorage.getItem("cartItems");
+    if (savedCart) setCartItems(JSON.parse(savedCart));
+
+    const fetchUserAddress = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+
+      try {
+        const res = await fetch("http://localhost:8083/api/user", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        //only add if backend has an address
+        if (data?.address) {
+          setAddresses([
+            {
+              name: data.name || "My Profile",
+              label: "SAVED",
+              address: data.address,
+              contact: data.phone || "",
+            },
+          ]);
+          setSelectedIdx(0);
+        }
+      } catch (e) {
+        console.error("Failed to fetch user address", e);
+      }
+    };
+
+    fetchUserAddress();
+  }, []);
+
+  const price = cartItems.reduce((s, i) => s + Number(i.price || 0) * Number(i.quantity || 0), 0);
+  const discount = 0;
   const total = price - discount;
 
-  // --- Address Functions (Refactored) ---
-  const removeAddress = (idx) => {
-    // A real app would have a confirmation modal, but for now, we'll just remove.
-    setAddresses((prev) => {
-      const next = prev.filter((_, i) => i !== idx);
-      if (selectedIdx >= next.length) {
-        setSelectedIdx(Math.max(0, next.length - 1));
-      }
-      return next;
-    });
+  const handleContinue = () => {
+    if (selectedIdx === null || !addresses[selectedIdx]) {
+      alert("Please add/select an address first.");
+      return;
+    }
+    const selected = addresses[selectedIdx];
+    localStorage.setItem("shippingAddress", selected.address);
+    navigate("/shipping");
   };
 
   const handleShowEditModal = (idx) => {
     setIsEditing(true);
+    setEditingIdx(idx);
     setCurrentAddress(addresses[idx]);
     setShowModal(true);
   };
 
   const handleShowAddModal = () => {
     setIsEditing(false);
+    setEditingIdx(null);
     setCurrentAddress(emptyAddress);
     setShowModal(true);
   };
@@ -85,18 +93,22 @@ export default function CheckoutAddress() {
   const handleModalClose = () => setShowModal(false);
 
   const handleModalSave = () => {
-    if (isEditing) {
-      // Edit existing address
-      setAddresses((prev) =>
-        prev.map((addr, idx) =>
-          idx === selectedIdx ? currentAddress : addr
-        )
-      );
-    } else {
-      // Add new address
-      setAddresses((prev) => [...prev, currentAddress]);
-      setSelectedIdx(addresses.length); // Auto-select the new address
+    if (!currentAddress.name || !currentAddress.address) {
+      alert("Name and Address are required.");
+      return;
     }
+
+    if (isEditing && editingIdx !== null) {
+      setAddresses((prev) => prev.map((a, i) => (i === editingIdx ? currentAddress : a)));
+      setSelectedIdx(editingIdx);
+    } else {
+      setAddresses((prev) => {
+        const next = [...prev, currentAddress];
+        setSelectedIdx(next.length - 1);
+        return next;
+      });
+    }
+
     setShowModal(false);
   };
 
@@ -105,98 +117,110 @@ export default function CheckoutAddress() {
     setCurrentAddress((prev) => ({ ...prev, [name]: value }));
   };
 
-  // --- Render ---
+  const removeAddress = (idx) => {
+    setAddresses((prev) => {
+      const next = prev.filter((_, i) => i !== idx);
+
+      if (next.length === 0) {
+        setSelectedIdx(null);
+      } else if (selectedIdx === idx) {
+        setSelectedIdx(Math.max(0, idx - 1));
+      } else if (selectedIdx > idx) {
+        setSelectedIdx(selectedIdx - 1);
+      }
+
+      return next;
+    });
+  };
+
   return (
     <>
       <Container className="checkout-container my-5">
         <Row>
-          {/* --- Left Column: Address --- */}
           <Col lg={8}>
             <div className="steps-container">
               <span className="step-active">Address</span>
-              <span className_name="step">Shipping</span>
+              <span className="step">Shipping</span>
               <span className="step">Payment</span>
             </div>
-            
+
             <h3 className="mt-4 mb-3">Select Delivery Address</h3>
 
-            {addresses.map((addr, idx) => (
-              <Card className="address-box mb-3" key={idx}>
+            {/*If none yet */}
+            {addresses.length === 0 ? (
+              <Card className="mb-3">
                 <Card.Body>
-                  <Form.Check
-                    type="radio"
-                    id={`addr-${idx}`}
-                    name="address"
-                    checked={selectedIdx === idx}
-                    onChange={() => setSelectedIdx(idx)}
-                    label={
-                      <div className="address-details">
-                        <h4>
-                          {addr.name} <span className="tag">{addr.label}</span>
-                        </h4>
-                        <p>{addr.address}</p>
-                        <p className="contact">Contact: {addr.contact}</p>
-                      </div>
-                    }
-                  />
-                  <div className="edit-remove-btns">
-                    <Button variant="link" size="sm" onClick={() => handleShowEditModal(idx)}>Edit</Button>
-                    <span>|</span>
-                    <Button variant="link" size="sm" className="text-danger" onClick={() => removeAddress(idx)}>Remove</Button>
-                  </div>
+                  <p className="mb-2">No saved address yet.</p>
+                  <Button variant="outline-primary" onClick={handleShowAddModal}>
+                    + Add New Address
+                  </Button>
                 </Card.Body>
               </Card>
-            ))}
+            ) : (
+              <>
+                {addresses.map((addr, idx) => (
+                  <Card
+                    className={`address-box mb-3 ${selectedIdx === idx ? "border-primary" : ""}`}
+                    key={idx}
+                  >
+                    <Card.Body>
+                      <Form.Check
+                        type="radio"
+                        id={`addr-${idx}`}
+                        name="address"
+                        checked={selectedIdx === idx}
+                        onChange={() => setSelectedIdx(idx)}
+                        label={
+                          <div className="address-details">
+                            <h4>
+                              {addr.name} <span className="tag">{addr.label}</span>
+                            </h4>
+                            <p>{addr.address}</p>
+                            <p className="contact">Contact: {addr.contact}</p>
+                          </div>
+                        }
+                      />
+                      <div className="edit-remove-btns">
+                        <Button variant="link" size="sm" onClick={() => handleShowEditModal(idx)}>
+                          Edit
+                        </Button>
+                        <span>|</span>
+                        <Button
+                          variant="link"
+                          size="sm"
+                          className="text-danger"
+                          onClick={() => removeAddress(idx)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                ))}
 
-            <Button variant="outline-primary" onClick={handleShowAddModal}>
-              + Add New Address
-            </Button>
+                <Button variant="outline-primary" onClick={handleShowAddModal}>
+                  + Add New Address
+                </Button>
+              </>
+            )}
           </Col>
 
-          {/* --- Right Column: Order Summary --- */}
           <Col lg={4}>
-            {/* This is styled just like the CartPage summary for consistency */}
             <aside className="order-summary">
               <h3>Order Summary</h3>
-              <div className="summary-line">
-                <span>Price</span>
-                <span>{formatCurrency(price)}</span>
-              </div>
-              <div className="summary-line">
-                <span>Discount</span>
-                <span>− {formatCurrency(discount)}</span>
-              </div>
-              <div className="summary-line">
-                <span>Shipping</span>
-                <span className="free-shipping">Free</span>
-              </div>
-              <div className="summary-line">
-                <span>Coupon Applied</span>
-                <span>{formatCurrency(0)}</span>
-              </div>
+              <div className="summary-line"><span>Price</span><span>{formatCurrency(price)}</span></div>
+              <div className="summary-line"><span>Discount</span><span>− {formatCurrency(discount)}</span></div>
+              <div className="summary-line"><span>Shipping</span><span className="free-shipping">Calculated next step</span></div>
               <hr />
-              <div className="summary-total">
-                <span>TOTAL</span>
-                <span>{formatCurrency(total)}</span>
-              </div>
+              <div className="summary-total"><span>TOTAL</span><span>{formatCurrency(total)}</span></div>
               <p className="delivery-date">
                 Estimated Delivery by <strong>{estimatedDelivery()}</strong>
               </p>
-              <Form.Group className="mb-3">
-                <Form.Control type="text" placeholder="Coupon Code" />
-              </Form.Group>
-              <Button
-                variant="warning"
-                className="w-100 checkout-btn"
-                onClick={() => navigate("/shipping")} // You'll need to create this page
-              >
+
+              <Button variant="warning" className="w-100 checkout-btn" onClick={handleContinue}>
                 Continue to Shipping
               </Button>
-              <Button
-                variant="outline-secondary"
-                className="w-100 mt-2"
-                onClick={() => navigate("/cart")}
-              >
+              <Button variant="outline-secondary" className="w-100 mt-2" onClick={() => navigate("/cart")}>
                 Back to Cart
               </Button>
             </aside>
@@ -204,7 +228,6 @@ export default function CheckoutAddress() {
         </Row>
       </Container>
 
-      {/* --- Address Add/Edit Modal --- */}
       <Modal show={showModal} onHide={handleModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>{isEditing ? "Edit Address" : "Add New Address"}</Modal.Title>
@@ -213,21 +236,11 @@ export default function CheckoutAddress() {
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={currentAddress.name}
-                onChange={handleModalChange}
-              />
+              <Form.Control name="name" value={currentAddress.name} onChange={handleModalChange} />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Label (e.g., HOME, OFFICE)</Form.Label>
-              <Form.Control
-                type="text"
-                name="label"
-                value={currentAddress.label}
-                onChange={handleModalChange}
-              />
+              <Form.Label>Label</Form.Label>
+              <Form.Control name="label" value={currentAddress.label} onChange={handleModalChange} />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Address</Form.Label>
@@ -240,23 +253,14 @@ export default function CheckoutAddress() {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Contact Number</Form.Label>
-              <Form.Control
-                type="text"
-                name="contact"
-                value={currentAddress.contact}
-                onChange={handleModalChange}
-              />
+              <Form.Label>Contact</Form.Label>
+              <Form.Control name="contact" value={currentAddress.contact} onChange={handleModalChange} />
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleModalClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleModalSave}>
-            Save Changes
-          </Button>
+          <Button variant="secondary" onClick={handleModalClose}>Close</Button>
+          <Button variant="primary" onClick={handleModalSave}>Save Changes</Button>
         </Modal.Footer>
       </Modal>
     </>

@@ -1,43 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-// Use the main product data source
-import productsData from '../data/products.json';
 // Import the unified Product Card (assuming it's in components)
 import ProductCard from '../components/ProductCard';
+import { addToCart } from '../utils/cartHelper';
 import '../styles/Wishlist.css'; // We'll create this next
+
+const API_URL = 'http://localhost:8083/api/products';
+const IMAGE_BASE_URL = 'http://localhost:8083';
 
 // Receive global favorites and the toggle function as props
 const Wishlist = ({ favorites, onToggleFavorite }) => {
   const navigate = useNavigate();
-
-  // Filter the main product list to find only the favorited items
-  // Note: 'favorites' is now an array of product *objects*
-  const wishlistItems = productsData.filter(product =>
-    favorites.some(fav => fav.id === product.id)
-  );
-
-  // --- Alert State (Consistent with Shop/ProductList) ---
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showCartAlert, setShowCartAlert] = useState(false);
   const [alertProduct, setAlertProduct] = useState("");
 
+  // Helper to format image URLs
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('data:')) return path;
+    if (path.startsWith('http')) return path;
+    if (path.startsWith('/assets')) return path;
+    return `${IMAGE_BASE_URL}${path}`;
+  };
+
+  // Fetch wishlist items from API
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const response = await fetch(API_URL);
+        if (response.ok) {
+          const allProducts = await response.json();
+          // Filter to only items in favorites and format images
+          const items = allProducts
+            .filter(product => favorites.some(fav => fav.id === product.id))
+            .map(product => ({
+              ...product,
+              image: getImageUrl(product.image)
+            }));
+          setWishlistItems(items);
+        }
+      } catch (err) {
+        console.error('Error fetching wishlist items:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, [favorites]);
+
   // Handler for Add to Cart button on the cards
-  const handleAddToCart = (product) => {
-    console.log("Added to cart from wishlist:", product.name);
-    setAlertProduct(product.name);
+  const handleAddToCart = async (product) => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+
+    const result = await addToCart(product, 1);
+    setAlertProduct(result.message);
     setShowCartAlert(true);
     setTimeout(() => {
       setShowCartAlert(false);
     }, 3000);
-    // Add to global cart state here in a real app
   };
 
-  // Handler for "Move All To Cart" button (placeholder functionality)
-  const moveAllToCart = () => {
-    console.log("Moving all items to cart:", wishlistItems);
-    alert("All wishlist items moved to cart! (Functionality pending)");
-    // In a real app, loop through wishlistItems and call the global add-to-cart function for each
+  // Handler for "Move All To Cart" button
+  const moveAllToCart = async () => {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+
+    if (wishlistItems.length === 0) return;
+
+    for (const item of wishlistItems) {
+      await addToCart(item, 1);
+    }
+
+    setAlertProduct(`All ${wishlistItems.length} items moved to cart!`);
+    setShowCartAlert(true);
+    setTimeout(() => setShowCartAlert(false), 3000);
   };
+
+  if (loading) {
+    return <Container className="my-5 text-center">Loading wishlist...</Container>;
+  }
 
   return (
     <Container className="wishlist-container my-5">

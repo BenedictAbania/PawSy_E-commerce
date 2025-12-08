@@ -151,3 +151,31 @@ reason: turns blue when hovered */
   color: #f87537;
 }
 
+/* Added badge styles for wishlist and cart */
+.nav-icon {
+  position: relative; 
+  display: inline-block;
+}
+
+.wishlist-badge, 
+.cart-badge {
+  position: absolute;
+  top: -8px;  
+  right: -10px; 
+  font-size: 0.65rem !important; 
+  padding: 3px 5px !important;
+  border-radius: 50%; 
+  min-width: 18px;
+  text-align: center;
+  line-height: 1;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.wishlist-badge {
+  background-color: #dc3545; 
+}
+
+.cart-badge {
+  background-color: #f59e0b; 
+}

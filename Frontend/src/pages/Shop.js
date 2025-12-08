@@ -9,10 +9,10 @@ import {
   Form,
   Spinner,
 } from "react-bootstrap";
-// REMOVED: import productsData from "../data/products.json";
 import "../styles/Shop.css";
 import ProductCard from "../components/ProductCard";
 import LoginRequiredModal from "../components/LoginRequiredModal";
+import { addToCart } from "../utils/cartHelper";
 
 import catImg from "../assets/pets/cat.png";
 import dogImg from "../assets/pets/dog.png";
@@ -41,7 +41,7 @@ const Shop = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 2. PARSE URL PARAMS (Fixes Category Link from Landing Page)
+  // 2. PARSE URL PARAMS
   const queryParams = new URLSearchParams(location.search);
   const initialPet = queryParams.get("petType") || "All";
   const initialCategory = queryParams.get("category") || "All";
@@ -62,16 +62,16 @@ const Shop = ({
   const onToggleFavorite = globalToggleFavorite || localToggleFavorite;
 
   // --- PRODUCT DATA STATE ---
-  const [allProducts, setAllProducts] = useState([]); // Store full API data
-  const [products, setProducts] = useState([]); // Store filtered data
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [allProducts, setAllProducts] = useState([]); 
+  const [products, setProducts] = useState([]); 
+  const [isLoading, setIsLoading] = useState(true); 
 
   const [filters, setFilters] = useState({
     petType: initialPet,
     category: initialCategory,
     brand: "All",
     minPrice: 0,
-    maxPrice: 200, // Matches your slider max
+    maxPrice: 200, 
   });
 
   // --- CART LOGIC ---
@@ -79,19 +79,26 @@ const Shop = ({
     const saved = localStorage.getItem("cartItems");
     return saved ? JSON.parse(saved) : [];
   });
+  
+  // Cart Alert State
   const [showCartAlert, setShowCartAlert] = useState(false);
   const [alertProduct, setAlertProduct] = useState("");
+  
+  // --- NEW: WISHLIST ALERT STATE ---
+  const [showWishlistAlert, setShowWishlistAlert] = useState(false);
+  const [wishlistAlertMessage, setWishlistAlertMessage] = useState("");
+
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [modalAction, setModalAction] = useState("addToCart");
 
-  // 3. IMAGE HELPER (Fixes Broken Images)
+  // 3. IMAGE HELPER
   const getImageUrl = (path) => {
     if (!path) return "https://placehold.co/400x400/FFF0E6/CCC?text=No+Image";
     if (path.startsWith("data:")) return path;
     if (path.startsWith("http")) return path;
-    if (path.startsWith("/assets")) return path; // Serve from Frontend Public
-    return `${IMAGE_BASE_URL}${path}`; // Serve from Backend Storage
+    if (path.startsWith("/assets")) return path; 
+    return `${IMAGE_BASE_URL}${path}`; 
   };
 
   // 4. FETCH PRODUCTS FROM API
@@ -100,13 +107,12 @@ const Shop = ({
     fetch(API_URL)
       .then((res) => res.json())
       .then((data) => {
-        // Pre-process images so ProductCard gets a valid URL
         const formattedData = data.map((p) => ({
           ...p,
           image: getImageUrl(p.image),
         }));
         setAllProducts(formattedData);
-        setProducts(formattedData); // Initialize filtered list
+        setProducts(formattedData); 
         setIsLoading(false);
       })
       .catch((err) => {
@@ -116,7 +122,7 @@ const Shop = ({
   }, []);
 
   // --- CART HANDLERS ---
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     const currentUser = localStorage.getItem("currentUser");
 
     if (!currentUser) {
@@ -126,23 +132,13 @@ const Shop = ({
       return;
     }
 
-    const updatedCart = [...cartItems];
-    const existing = updatedCart.find((item) => item.id === product.id);
-
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      updatedCart.push({ ...product, quantity: 1 });
-    }
-
-    setCartItems(updatedCart);
-    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-
-    setAlertProduct(product.name);
+    const result = await addToCart(product, 1);
+    setAlertProduct(result.message || product.name);
     setShowCartAlert(true);
-    setTimeout(() => setShowCartAlert(false), 2500);
+    setTimeout(() => setShowCartAlert(false), 3000);
   };
 
+  // --- UPDATED: FAVORITE HANDLER ---
   const handleToggleFavorite = (product) => {
     const currentUser = localStorage.getItem("currentUser");
 
@@ -152,7 +148,20 @@ const Shop = ({
       setShowLoginModal(true);
       return;
     }
+
+    // Determine message based on CURRENT state (before toggle)
+    const isAlreadyFavorite = favorites.some((fav) => fav.id === product.id);
+    const message = isAlreadyFavorite 
+      ? `Removed ${product.name} from Wishlist.` 
+      : `Added ${product.name} to Wishlist!`;
+
+    // Perform the action
     onToggleFavorite(product);
+
+    // Trigger the Alert
+    setWishlistAlertMessage(message);
+    setShowWishlistAlert(true);
+    setTimeout(() => setShowWishlistAlert(false), 3000);
   };
 
   const handleGoToCart = () => {
@@ -175,9 +184,8 @@ const Shop = ({
     }
   };
 
-  // Apply Filters to allProducts
   useEffect(() => {
-    let filtered = allProducts; // Start with full data
+    let filtered = allProducts; 
 
     if (filters.petType !== "All") {
       filtered = filtered.filter((p) => p.petType === filters.petType);
@@ -198,7 +206,6 @@ const Shop = ({
     setProducts(filtered);
   }, [filters, allProducts]);
 
-  // Sync Filters with URL (Back/Forward navigation)
   useEffect(() => {
     const petFromQuery = queryParams.get("petType") || "All";
     const catFromQuery = queryParams.get("category") || "All";
@@ -213,14 +220,28 @@ const Shop = ({
   // --- UI ---
   return (
     <Container className="my-5">
+      {/* 1. Cart Alert */}
       <Alert
         variant="success"
         show={showCartAlert}
         onClose={() => setShowCartAlert(false)}
         dismissible
         className="cart-alert"
+        style={{ zIndex: 1050 }} // Ensure it shows on top
       >
         Added <strong>{alertProduct}</strong> to your cart!
+      </Alert>
+
+      {/* 2. NEW: Wishlist Alert */}
+      <Alert
+        variant="info"
+        show={showWishlistAlert}
+        onClose={() => setShowWishlistAlert(false)}
+        dismissible
+        className="wishlist-alert"
+        style={{ zIndex: 1050, marginTop: showCartAlert ? "10px" : "0" }} // Stack cleanly if both appear
+      >
+        {wishlistAlertMessage}
       </Alert>
 
       <section className="shop-by-pet-section text-center mb-5">

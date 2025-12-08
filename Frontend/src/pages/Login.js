@@ -20,7 +20,9 @@ function Login() {
     try {
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 
+        "Accept": "application/json"
+         },
         body: JSON.stringify({ email, password }),
       });
 

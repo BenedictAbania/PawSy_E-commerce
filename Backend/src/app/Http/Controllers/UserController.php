@@ -24,6 +24,8 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'role' => 'required|in:admin,user',
+            'phone' => 'nullable|string|max:20', 
+            'address' => 'nullable|string|max:500',
         ]);
 
         // Hash the password before saving
@@ -45,6 +47,8 @@ class UserController extends Controller
             'email' => ['sometimes', 'email', Rule::unique('users')->ignore($user->id)],
             'role' => 'sometimes|in:admin,user',
             'password' => 'nullable|string|min:6', // Optional when editing
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
         ]);
 
         // Only hash and update password if a new one was provided

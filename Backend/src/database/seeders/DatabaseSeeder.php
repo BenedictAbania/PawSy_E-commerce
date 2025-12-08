@@ -15,6 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminUserSeeder::class);
 
         // This runs the file that adds your 6 mock products
-        $this->call(ProductSeeder::class);
+        // $this->call(ProductSeeder::class);
     }
 }

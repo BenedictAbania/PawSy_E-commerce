@@ -53,6 +53,6 @@
 /* Table Header Style (Used in Products/Users pages) */
 .table-orange-header th {
     background-color: #fd7e14 !important;
-    color: white !important;
+    color: rgb(0, 0, 0) !important;
     border: none;
 }

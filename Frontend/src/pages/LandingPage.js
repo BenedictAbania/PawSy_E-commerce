@@ -12,6 +12,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { addToCart } from "../utils/cartHelper";
 
 // Assets
 import accessoriesImg from "../assets/categories/Accessories.png";
@@ -83,21 +84,17 @@ const LandingPage = () => {
     );
   };
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     const currentUser = localStorage.getItem("currentUser");
     if (!currentUser) {
       setSelectedProduct(product);
       setModalAction("addToCart");
       setShowLoginModal(true);
-    } else {
-      const cartRaw = localStorage.getItem("cartItems") || "[]";
-      const cart = JSON.parse(cartRaw);
-      const existingItem = cart.find((item) => item.id === product.id);
-      if (existingItem) existingItem.quantity += 1;
-      else cart.push({ ...product, quantity: 1 });
-      localStorage.setItem("cartItems", JSON.stringify(cart));
-      alert(`${product.name} added to cart!`);
+      return;
     }
+
+    const result = await addToCart(product, 1);
+    alert(result.message);
   };
 
   return (

@@ -25,7 +25,7 @@ import "../styles/Navbar.css";
 import Logo from "../assets/icon-logo.png";
 
 // --- Accept favoritesCount as a prop ---
-const NavBar = ({ favoritesCount = 0 }) => {
+const NavBar = ({ favoritesCount = 0, cartCount= 0 }) => {
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
 
@@ -100,7 +100,11 @@ const NavBar = ({ favoritesCount = 0 }) => {
             {/* Cart Icon (already correct) */}
             <Link to="/cart" className="nav-icon position-relative">
               <FontAwesomeIcon icon={faCartShopping} />
-              {/* Optional: Add cart count badge later */}
+              {cartCount > 0 && (
+                <Badge pill bg="warning" className="cart-badge">
+                  {cartCount}
+                </Badge>
+              )}
             </Link>
 
             {/* Wishlist Icon */}
