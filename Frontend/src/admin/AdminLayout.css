@@ -1,0 +1,58 @@
+/* PawSy_E-commerce/Frontend/src/admin/AdminLayout.css */
+
+/* Custom Orange Color to match your brand */
+.text-orange {
+    color: #fd7e14 !important;
+}
+
+.bg-orange {
+    background-color: #fd7e14 !important;
+}
+
+.btn-orange {
+    background-color: #fd7e14;
+    border-color: #fd7e14;
+    color: white;
+}
+
+.btn-orange:hover {
+    background-color: #e36d0d;
+    border-color: #e36d0d;
+    color: white;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.nav-link {
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+/* Active Link State (Highlighter) */
+.active-link {
+    background-color: #fd7e14 !important; /* Orange background */
+    color: white !important;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Main Content Area */
+.main-content {
+    background-color: #f8f9fa;
+}
+
+/* Table Header Style (Used in Products/Users pages) */
+.table-orange-header th {
+    background-color: #fd7e14 !important;
+    color: rgb(0, 0, 0) !important;
+    border: none;
+}

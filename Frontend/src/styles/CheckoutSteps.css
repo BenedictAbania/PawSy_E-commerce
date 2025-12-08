@@ -1,0 +1,43 @@
+.checkout-steps-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.step-item {
+  font-weight: 600;
+  font-size: 16px;
+  color: #ccc;
+  cursor: pointer;
+  padding-bottom: 5px;
+  position: relative;
+}
+
+.step-item.active {
+  color: #FD7E14; /* Your Brand Orange */
+  border-bottom: 2px solid #FD7E14;
+}
+
+.step-item.completed {
+  color: #333; /* Dark color for completed steps */
+  border-bottom: 2px solid transparent;
+}
+
+.step-item:hover {
+  color: #FD7E14;
+}
+
+.step-line {
+  height: 2px;
+  width: 50px; /* Length of the line between steps */
+  background-color: #eee;
+  margin: 0 15px;
+}
+
+/* Optional: Make the line orange if the next step is active/completed */
+.step-item.completed + .step-line {
+  background-color: #FD7E14;
+}

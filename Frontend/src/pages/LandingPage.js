@@ -1,13 +1,10 @@
-
-import React, { useState } from "react";
-
-import { Container, Row, Col, Button, Card } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Button, Card, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "../styles/LandingPage.css";
 import heroImage from "../assets/hero-image.png";
 import qualityImage from "../assets/dogNcat.png";
 import LoginRequiredModal from "../components/LoginRequiredModal";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -15,26 +12,47 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { addToCart } from "../utils/cartHelper";
 
-
-// Import JSON data
-import featuredProducts from "../data/featuredProducts.json";
-import bestSellingProducts from "../data/bestSellingProducts.json";
-
-// Import category images
+// Assets
 import accessoriesImg from "../assets/categories/Accessories.png";
 import foodImg from "../assets/categories/Food.png";
 import furnitureImg from "../assets/categories/Furniture.png";
 import bagImg from "../assets/categories/Bag.png";
 
+const API_URL = "http://localhost:8083/api/products";
+const IMAGE_BASE_URL = "http://localhost:8083";
+
 const LandingPage = () => {
   const navigate = useNavigate();
-
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [modalAction, setModalAction] = useState('addToCart');
+  const [modalAction, setModalAction] = useState("addToCart");
 
+  // Load Real Products
+  useEffect(() => {
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch((err) => console.error("Error fetching products:", err));
+  }, []);
+
+  // Helpers
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith("data:")) return path;
+    if (path.startsWith("http")) return path;
+    if (path.startsWith("/assets")) return path;
+    return `${IMAGE_BASE_URL}${path}`;
+  };
+  const featuredProducts = products.filter((p) => Boolean(p.is_featured));
+  const bestSellingProducts = products.filter((p) => Boolean(p.is_best_seller));
 
   const categories = [
     { name: "Accessories", image: accessoriesImg },
@@ -52,73 +70,52 @@ const LandingPage = () => {
     { name: "Turtle", image: require("../assets/pets/turtle.png") },
   ];
 
-
-  // Toggle favorites with login check
+  // Logic to Add to Cart / Favorite (Same as before)
   const toggleFavorite = (id, product) => {
-    const currentUser = localStorage.getItem('currentUser');
-    
+    const currentUser = localStorage.getItem("currentUser");
     if (!currentUser) {
-      // User not logged in - show modal
       setSelectedProduct(product);
-      setModalAction('addToWishlist');
+      setModalAction("addToWishlist");
       setShowLoginModal(true);
       return;
     }
-
     setFavorites((prev) =>
       prev.includes(id) ? prev.filter((fav) => fav !== id) : [...prev, id]
     );
   };
 
-  // Handle add to cart with login check
-  const handleAddToCart = (product) => {
-    const currentUser = localStorage.getItem('currentUser');
-    
+  const handleAddToCart = async (product) => {
+    const currentUser = localStorage.getItem("currentUser");
     if (!currentUser) {
-      // User not logged in - show modal
       setSelectedProduct(product);
-      setModalAction('addToCart');
+      setModalAction("addToCart");
       setShowLoginModal(true);
-    } else {
-      // User is logged in - add to cart using cartItems (consistent with Shop)
-      const cartRaw = localStorage.getItem('cartItems') || '[]';
-      const cart = JSON.parse(cartRaw);
-      const existingItem = cart.find(item => item.id === product.id);
-      
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        cart.push({ ...product, quantity: 1 });
-      }
-      
-      localStorage.setItem('cartItems', JSON.stringify(cart));
-      alert(`${product.name} added to cart!`);
+      return;
     }
-  };
 
+    const result = await addToCart(product, 1);
+    alert(result.message);
+  };
 
   return (
     <div className="landing-page">
-      {/* HERO SECTION */}
+      {/* HERO */}
       <section className="hero-section">
         <Container>
           <Row className="align-items-center">
             <Col md={6} className="text-section">
               <h5 className="brand-name">PawSy</h5>
               <h1>
-                Everything Your Pet <br />
-                Needs, All in One Place.
+                Everything Your Pet <br /> Needs, All in One Place.
               </h1>
               <p>
-                Discover top pet products, carefully selected by pet lovers to
-                ensure premium quality, comfort, and value for your beloved
-                companions.
+                Discover top pet products, carefully selected by pet lovers.
               </p>
               <Button className="shop-btn" onClick={() => navigate("/shop")}>
                 Shop Now
               </Button>
             </Col>
-            <Col md={6} className="image-section">
+            <Col md={6}>
               <div className="hero-image-container">
                 <img src={heroImage} alt="Happy pets" className="hero-image" />
               </div>
@@ -126,7 +123,8 @@ const LandingPage = () => {
           </Row>
         </Container>
       </section>
-      {/* CATEGORY SECTION */}
+
+      {/* CATEGORIES (Fixed Link) */}
       <section className="category-section">
         <Container>
           <h3 className="section-title">Browse by Category</h3>
@@ -135,9 +133,7 @@ const LandingPage = () => {
               <Col key={index} xs={6} md={3} className="text-center">
                 <div
                   className="category-item"
-                  onClick={() =>
-                    navigate(`/shop?category=${cat.name.toLowerCase()}`)
-                  }
+                  onClick={() => navigate(`/shop?category=${cat.name}`)}
                 >
                   <img
                     src={cat.image}
@@ -152,77 +148,62 @@ const LandingPage = () => {
         </Container>
       </section>
 
-      {/* FEATURED PRODUCTS */}
+      {/* FEATURED PRODUCTS (Dynamic) */}
       <section className="featured-products">
         <Container>
-          <h3
-            className="section-title text-center"
-            style={{ fontWeight: "bolder", marginBottom: "1.5rem" }}
-          >
+          <h3 className="section-title text-center fw-bold mb-4">
             Featured Products
           </h3>
-          <div className="featured-scroll d-flex overflow-auto pb-3">
-            {featuredProducts.map((product) => (
-              <Card
-                key={product.id}
-                className="feature-card me-3 flex-shrink-0"
-                style={{ width: "18rem" }}
-              >
-                <Card.Img
-                  variant="top"
-                  src={product.image}
-                  alt={product.name}
-                  className="product-image"
-                />
-                <Card.Body>
-                  <Card.Title>{product.name}</Card.Title>
-                  <Card.Text>
-                    ${product.price.toFixed(2)}
-                    <Button
-                      variant="link"
-                      className="heart-btn p-0"
-                      onClick={() => toggleFavorite(product.id, product)}
-                    >
-                      <FontAwesomeIcon
-                        icon={
-                          favorites.includes(product.id)
-                            ? faHeartSolid
-                            : faHeartRegular
-                        }
-                      />
-                    </Button>
-                  </Card.Text>
-                  <Button
-                    className="add-to-cart-btn"
-                    onClick={() => handleAddToCart(product)}
-                    style={{ width: '100%', backgroundColor: '#f97316', border: 'none' }}
+          {loading ? (
+            <div className="text-center">
+              <Spinner animation="border" variant="warning" />
+            </div>
+          ) : (
+            <div className="featured-scroll d-flex overflow-auto pb-3">
+              {featuredProducts.length > 0 ? (
+                featuredProducts.map((product) => (
+                  <Card
+                    key={product.id}
+                    className="feature-card me-3 flex-shrink-0"
+                    style={{ width: "18rem" }}
                   >
-                    Add to Cart
-                  </Button>
-                </Card.Body>
-              </Card>
-            ))}
-          </div>
-          <div className="arrow-buttons-below text-center mt-3">
-            <Button
-              variant="dark"
-              className="arrow-btn me-3"
-              onClick={() =>
-                (document.querySelector(".featured-scroll").scrollLeft -= 300)
-              }
-            >
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </Button>
-            <Button
-              variant="dark"
-              className="arrow-btn"
-              onClick={() =>
-                (document.querySelector(".featured-scroll").scrollLeft += 300)
-              }
-            >
-              <FontAwesomeIcon icon={faChevronRight} />
-            </Button>
-          </div>
+                    <div
+                      style={{
+                        height: "200px",
+                        overflow: "hidden",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Card.Img
+                        variant="top"
+                        src={getImageUrl(product.image)}
+                        alt={product.name}
+                        style={{
+                          maxHeight: "100%",
+                          maxWidth: "100%",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </div>
+                    <Card.Body>
+                      <Card.Title>{product.name}</Card.Title>
+                      <Card.Text>${Number(product.price).toFixed(2)}</Card.Text>
+                      <Button
+                        className="add-to-cart-btn w-100 bg-orange border-0"
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        Add to Cart
+                      </Button>
+                    </Card.Body>
+                  </Card>
+                ))
+              ) : (
+                <p className="text-center w-100">No featured products yet.</p>
+              )}
+            </div>
+          )}
         </Container>
       </section>
 
@@ -240,10 +221,12 @@ const LandingPage = () => {
               </div>
             </Col>
             <Col md={6}>
-            
               <h3 className="quality-header">Quality you can trust,</h3>
               <h3 className="quality-header2">Comfort they can feel</h3>
-              <p>Our mission is simple. We provide trusted, affordable, and high-quality supplies to help every pet live a happy and healthy life.</p>
+              <p>
+                Our mission is simple. We provide trusted, affordable, and
+                high-quality supplies.
+              </p>
               <Button
                 className="learn-more-btn"
                 onClick={() => navigate("/aboutUs")}
@@ -255,7 +238,7 @@ const LandingPage = () => {
         </Container>
       </section>
 
-      {/* BEST SELLING */}
+      {/* BEST SELLING (Dynamic) */}
       <section className="best-selling">
         <Container>
           <div className="d-flex justify-content-between align-items-center">
@@ -265,39 +248,35 @@ const LandingPage = () => {
             </Button>
           </div>
           <Row className="mt-4">
-            {bestSellingProducts.map((product) => (
+            {bestSellingProducts.slice(0, 4).map((product) => (
               <Col key={product.id} xs={6} md={3} className="mb-4">
-                <Card className="product-card">
-                  <Card.Img
-                    variant="top"
-                    src={product.image}
-                    alt={product.name}
-                    className="product-image"
-                  />
+                <Card className="product-card h-100">
+                  <div
+                    style={{
+                      height: "180px",
+                      overflow: "hidden",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Card.Img
+                      variant="top"
+                      src={getImageUrl(product.image)}
+                      alt={product.name}
+                      style={{
+                        maxHeight: "100%",
+                        maxWidth: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
                   <Card.Body>
                     <Card.Title>{product.name}</Card.Title>
-
-                    <Card.Text>
-                      ${product.price.toFixed(2)}
-                      <Button
-                        variant="link"
-                        className="heart-btn p-0"
-                        onClick={() => toggleFavorite(product.id, product)}
-                      >
-                        <FontAwesomeIcon
-                          icon={
-                            favorites.includes(product.id)
-                              ? faHeartSolid
-                              : faHeartRegular
-                          }
-                        />
-                      </Button>
-                    </Card.Text>
-
+                    <Card.Text>${Number(product.price).toFixed(2)}</Card.Text>
                     <Button
-                      className="add-to-cart-btn"
+                      className="add-to-cart-btn w-100 bg-orange border-0"
                       onClick={() => handleAddToCart(product)}
-                      style={{ width: '100%', backgroundColor: '#f97316', border: 'none' }}
                     >
                       Add to Cart
                     </Button>
@@ -318,9 +297,7 @@ const LandingPage = () => {
               <Col key={index} xs={4} md={2} className="text-center">
                 <div
                   className="pet-icon-container"
-                  onClick={() =>
-                    (window.location.href = `/shop?petType=${pet.name}`)
-                  }
+                  onClick={() => navigate(`/shop?petType=${pet.name}`)}
                 >
                   <img
                     src={pet.image}
@@ -335,7 +312,6 @@ const LandingPage = () => {
         </Container>
       </section>
 
-      {/* Login Required Modal */}
       {showLoginModal && (
         <LoginRequiredModal
           product={selectedProduct}
