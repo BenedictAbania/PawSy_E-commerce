@@ -14,38 +14,10 @@ import {
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTag } from "@fortawesome/free-solid-svg-icons";
-import CheckoutSteps from '../components/CheckoutSteps'; // <--- Added Import
+import CheckoutSteps from '../components/CheckoutSteps';
 import "../styles/Payment.css";
 
 const formatCurrency = (v) => `$${Number(v || 0).toFixed(2)}`;
-
-// COD + sample cards 
-const initialPaymentMethods = [
-  {
-    id: 1,
-    type: "Cash on Delivery",
-    logo: "https://cdn-icons-png.flaticon.com/512/2331/2331941.png",
-    lastFour: "",
-    expiry: "",
-    code: "cod",
-  },
-  {
-    id: 2,
-    type: "Visa",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg",
-    lastFour: "6754",
-    expiry: "06/25",
-    code: "visa",
-  },
-  {
-    id: 3,
-    type: "Mastercard",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg",
-    lastFour: "5643",
-    expiry: "11/25",
-    code: "mastercard",
-  },
-];
 
 export default function Payment() {
   const navigate = useNavigate();
@@ -57,8 +29,9 @@ export default function Payment() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [selectedId, setSelectedId] = useState(1); // default COD
-  const [paymentMethods, setPaymentMethods] = useState(initialPaymentMethods);
+  // Default to COD (id: 'cod') until user picks something else
+  const [selectedId, setSelectedId] = useState('cod'); 
+  const [paymentMethods, setPaymentMethods] = useState([]);
 
   // coupon UI (optional)
   const [couponCode, setCouponCode] = useState("");
@@ -70,7 +43,7 @@ export default function Payment() {
     type: "Visa",
     cardName: "",
     cardNumber: "",
-    expiryDate: "", // "YYYY-MM"
+    expiryDate: "", 
   });
 
   // --- LOAD DATA ---
@@ -84,9 +57,37 @@ export default function Payment() {
     const savedShipCost = localStorage.getItem("shippingCost");
     if (savedShipCost) setShippingCost(Number(savedShipCost) || 0);
 
-    // Optional: Validate flow
-    // const savedMethod = localStorage.getItem("shippingMethod");
-    // if (!savedMethod) navigate("/shipping");
+    // FETCH REAL PAYMENT METHODS
+    const fetchPaymentMethods = async () => {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
+
+        try {
+            const res = await fetch('http://localhost:8083/api/payment-methods', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            // Merge COD (static) with DB Cards
+            const allMethods = [
+                { id: 'cod', type: 'Cash on Delivery', logo: 'https://cdn-icons-png.flaticon.com/512/2331/2331941.png', code: 'cod' },
+                ...data.map(card => ({
+                    id: card.id,
+                    type: card.type,
+                    logo: card.type === 'Visa' ? "https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" : "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg",
+                    lastFour: card.last_four,
+                    expiry: card.expiry_date,
+                    code: card.type.toLowerCase()
+                }))
+            ];
+            
+            setPaymentMethods(allMethods);
+        } catch (err) {
+            console.error("Failed to load payment methods", err);
+        }
+    };
+
+    fetchPaymentMethods();
   }, [navigate]);
 
   // --- TOTAL CALC ---
@@ -159,41 +160,62 @@ export default function Payment() {
     setNewCard((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleModalSave = () => {
-    // basic validation
-    if (!newCard.cardName || !newCard.cardNumber || !newCard.expiryDate) {
+  const handleModalSave = async () => {
+    if (!newCard.cardNumber || !newCard.expiryDate) {
       alert("Please complete all fields.");
       return;
     }
 
-    const lastFour = (newCard.cardNumber || "").slice(-4);
-    const [yyyy, mm] = newCard.expiryDate.split("-");
-    const expiry = `${mm}/${yyyy.slice(-2)}`;
+    // Save to Backend so it persists
+    const token = localStorage.getItem("authToken");
+    try {
+        const [year, month] = newCard.expiryDate.split('-');
+        const formattedExpiry = `${month}/${year.slice(2)}`;
 
-    const logo =
-      newCard.type === "Visa"
-        ? "https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg"
-        : "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg";
+        const response = await fetch('http://localhost:8083/api/payment-methods', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                type: newCard.type,
+                card_number: newCard.cardNumber,
+                expiry_date: formattedExpiry
+            })
+        });
 
-    const newMethod = {
-      id: Date.now(),
-      type: newCard.type,
-      logo,
-      lastFour,
-      expiry,
-      code: newCard.type.toLowerCase(),
-      cardName: newCard.cardName,
-    };
-
-    setPaymentMethods((prev) => [...prev, newMethod]);
-    setSelectedId(newMethod.id);
-    setNewCard({ type: "Visa", cardName: "", cardNumber: "", expiryDate: "" });
-    setShowModal(false);
+        if(response.ok) {
+            // Reload list to see new card
+            const res = await fetch('http://localhost:8083/api/payment-methods', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            
+            const allMethods = [
+                { id: 'cod', type: 'Cash on Delivery', logo: 'https://cdn-icons-png.flaticon.com/512/2331/2331941.png', code: 'cod' },
+                ...data.map(card => ({
+                    id: card.id,
+                    type: card.type,
+                    logo: card.type === 'Visa' ? "https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" : "https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg",
+                    lastFour: card.last_four,
+                    expiry: card.expiry_date,
+                    code: card.type.toLowerCase()
+                }))
+            ];
+            setPaymentMethods(allMethods);
+            setShowModal(false);
+            setNewCard({ type: "Visa", cardName: "", cardNumber: "", expiryDate: "" });
+        } else {
+            alert("Failed to save card");
+        }
+    } catch(e) {
+        console.error(e);
+    }
   };
 
   return (
     <Container className="payment-container my-5">
-      {/* 1. Added Checkout Steps */}
       <CheckoutSteps activeStep="payment" />
 
       <Row>
@@ -240,7 +262,6 @@ export default function Payment() {
         </Col>
 
         <Col lg={4}>
-          {/* 2. Updated Summary Styling to match Address Page */}
           <aside className="order-summary p-4 bg-white rounded shadow-sm border">
             <h4 className="mb-4">Order Summary</h4>
 
