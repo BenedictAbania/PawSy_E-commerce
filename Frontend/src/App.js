@@ -39,6 +39,7 @@ import Products from "./admin/Products";
 import Users from "./admin/Users";
 import AdminMessages from "./admin/AdminMessages"; 
 import "./admin/Admin.css";
+import Transactions from "./admin/Transactions";
 
 import {
   addToWishlist,
@@ -251,6 +252,7 @@ function App() {
           <Route path="products" element={<Products />} />
           <Route path="users" element={<Users />} />
           <Route path="messages" element={<AdminMessages />} />
+          <Route path="transactions" element={<Transactions />} />
         </Route>
 
       </Routes>

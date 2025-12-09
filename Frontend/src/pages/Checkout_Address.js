@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// ADDED 'Alert' to this list below:
 import { Container, Row, Col, Button, Card, Form, Modal, Spinner, Alert } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
@@ -23,7 +22,7 @@ export default function CheckoutAddress() {
   // --- State ---
   const [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState([]);
-  const [selectedIdx, setSelectedIdx] = useState(0); // Default to first address
+  const [selectedIdx, setSelectedIdx] = useState(0); 
   const [cartItems, setCartItems] = useState([]);
 
   // Modal State
@@ -31,71 +30,64 @@ export default function CheckoutAddress() {
   const [isEditing, setIsEditing] = useState(false);
   const [currentAddress, setCurrentAddress] = useState(emptyAddress);
   const [editingIdx, setEditingIdx] = useState(null);
+  const [isSaving, setIsSaving] = useState(false); // New saving state
 
   // --- Load Data ---
   useEffect(() => {
-    // 1. Load Cart
     const savedCart = localStorage.getItem("cartItems");
     if (savedCart) setCartItems(JSON.parse(savedCart));
-
-    // 2. Fetch User Address from Backend
-    const fetchUserAddress = async () => {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const res = await fetch("http://localhost:8083/api/user", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        
-        if (res.ok) {
-          const data = await res.json();
-          // If the user has a saved address in DB, add it to the list
-          if (data?.address) {
-            setAddresses([
-              {
-                name: data.name || "My Saved Address",
-                label: "Default",
-                address: data.address,
-                contact: data.phone || "No contact provided",
-              },
-            ]);
-          }
-        }
-      } catch (e) {
-        console.error("Failed to fetch user address", e);
-      } finally {
-        setLoading(false);
-      }
-    };
 
     fetchUserAddress();
   }, []);
 
-  // --- Calculations ---
+  const fetchUserAddress = async () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:8083/api/user", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.address) {
+          setAddresses([
+            {
+              name: data.name || "My Saved Address",
+              label: "Default",
+              address: data.address,
+              contact: data.phone || "No contact provided",
+            },
+          ]);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch user address", e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const subtotal = cartItems.reduce((s, i) => s + Number(i.price || 0) * Number(i.quantity || 0), 0);
-  const shippingCost = 0; // Calculated next step usually, simplified here
+  const shippingCost = 0; 
   const total = subtotal + shippingCost;
 
-  // --- Handlers ---
   const handleContinue = () => {
     if (addresses.length === 0) {
-      // This is the standard browser alert, not the component
       alert("Please add an address first.");
       return;
     }
     
-    // Save selected address to Local Storage for the next steps
     const selected = addresses[selectedIdx];
     localStorage.setItem("shippingAddress", selected.address); 
-    
     navigate("/shipping");
   };
 
-  // Modal Handlers
+  // --- Modal Handlers ---
   const handleShowAddModal = () => {
     setIsEditing(false);
     setEditingIdx(null);
@@ -104,40 +96,64 @@ export default function CheckoutAddress() {
   };
 
   const handleShowEditModal = (idx, e) => {
-    e.stopPropagation(); // Prevent selecting the card when clicking edit
+    e.stopPropagation(); 
     setIsEditing(true);
     setEditingIdx(idx);
     setCurrentAddress(addresses[idx]);
     setShowModal(true);
   };
 
-  const handleModalSave = () => {
-    if (!currentAddress.name || !currentAddress.address) {
-      alert("Name and Address are required.");
+  // --- SAVE ADDRESS TO BACKEND ---
+  const handleModalSave = async () => {
+    if (!currentAddress.name || !currentAddress.address || !currentAddress.contact) {
+      alert("Name, Address, and Contact are required.");
       return;
     }
 
-    if (isEditing && editingIdx !== null) {
-      setAddresses((prev) => prev.map((a, i) => (i === editingIdx ? currentAddress : a)));
-    } else {
-      setAddresses((prev) => [...prev, currentAddress]);
-      setSelectedIdx(addresses.length); // Select the new one
-    }
+    setIsSaving(true);
+    const token = localStorage.getItem("authToken");
 
-    setShowModal(false);
+    try {
+      // We map 'contact' to 'phone' for the backend
+      const payload = {
+        name: currentAddress.name,
+        address: currentAddress.address,
+        phone: currentAddress.contact 
+      };
+
+      const response = await fetch('http://localhost:8083/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) throw new Error("Failed to save address");
+
+      // Success: Refresh data from backend to ensure consistency
+      await fetchUserAddress();
+      setShowModal(false);
+      
+    } catch (err) {
+      alert("Error saving address: " + err.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
+  // Note: Since we are saving to the User Profile (1-to-1 relationship), 
+  // 'Removing' usually means clearing the fields, but for Checkout flow, 
+  // we might just want to hide it locally or clear the DB fields.
+  // For safety, let's keep remove local-only or implement a 'clear profile' endpoint.
+  // Here, I will make it clear the local view for now.
   const removeAddress = (idx, e) => {
     e.stopPropagation();
-    if(!window.confirm("Remove this address?")) return;
-
-    setAddresses((prev) => {
-      const next = prev.filter((_, i) => i !== idx);
-      // Adjust selected index
-      if (next.length === 0) setSelectedIdx(0);
-      else if (selectedIdx >= idx) setSelectedIdx(Math.max(0, selectedIdx - 1));
-      return next;
-    });
+    if(!window.confirm("Remove this address from view?")) return;
+    setAddresses([]);
+    setSelectedIdx(0);
   };
 
   if (loading) return <div className="text-center my-5"><Spinner animation="border" variant="warning" /></div>;
@@ -145,18 +161,19 @@ export default function CheckoutAddress() {
   return (
     <>
       <Container className="my-5">
-        {/* Unified Checkout Steps Component */}
         <CheckoutSteps activeStep="address" />
 
         <Row>
-          {/* LEFT COLUMN: Address Selection */}
           <Col lg={8}>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h3 className="mb-0">Select Delivery Address</h3>
-              <Button variant="outline-primary" size="sm" onClick={handleShowAddModal}>
-                <FontAwesomeIcon icon={faPlus} className="me-2" />
-                Add New Address
-              </Button>
+              {/* Only show Add button if no address exists, since we only support 1 profile address for now */}
+              {addresses.length === 0 && (
+                <Button variant="outline-primary" size="sm" onClick={handleShowAddModal}>
+                  <FontAwesomeIcon icon={faPlus} className="me-2" />
+                  Add Address
+                </Button>
+              )}
             </div>
 
             {addresses.length === 0 ? (
@@ -202,14 +219,6 @@ export default function CheckoutAddress() {
                         >
                           <FontAwesomeIcon icon={faEdit} />
                         </Button>
-                        <Button 
-                          variant="light" 
-                          size="sm" 
-                          className="text-danger"
-                          onClick={(e) => removeAddress(idx, e)}
-                        >
-                          <FontAwesomeIcon icon={faTrashAlt} />
-                        </Button>
                       </div>
                     </div>
                   </Card.Body>
@@ -218,32 +227,25 @@ export default function CheckoutAddress() {
             )}
           </Col>
 
-          {/* RIGHT COLUMN: Order Summary */}
           <Col lg={4}>
             <aside className="order-summary p-4 bg-white rounded shadow-sm border">
               <h4 className="mb-4">Order Summary</h4>
-              
               <div className="d-flex justify-content-between mb-2">
                 <span>Subtotal ({cartItems.length} items)</span>
                 <span>{formatCurrency(subtotal)}</span>
               </div>
-              
               <div className="d-flex justify-content-between mb-2">
                 <span>Shipping</span>
                 <span className="text-muted fst-italic">Calculated next step</span>
               </div>
-              
               <hr />
-              
               <div className="d-flex justify-content-between mb-4 fw-bold fs-5">
                 <span>Total</span>
                 <span>{formatCurrency(total)}</span>
               </div>
-
               <div className="mb-4 text-muted small">
                 Estimated Delivery by <strong>{estimatedDelivery()}</strong>
               </div>
-
               <Button 
                 variant="warning" 
                 className="w-100 py-2 fw-bold text-white" 
@@ -252,7 +254,6 @@ export default function CheckoutAddress() {
               >
                 Continue to Shipping
               </Button>
-
               <Button 
                 variant="link" 
                 className="w-100 mt-2 text-decoration-none text-secondary" 
@@ -268,7 +269,7 @@ export default function CheckoutAddress() {
       {/* --- Add/Edit Modal --- */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>{isEditing ? "Edit Address" : "Add New Address"}</Modal.Title>
+          <Modal.Title>{isEditing ? "Edit Delivery Details" : "Add Delivery Details"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -282,6 +283,7 @@ export default function CheckoutAddress() {
               />
             </Form.Group>
             
+            {/* Note: 'Label' is UI only for now unless we add a column in DB */}
             <Form.Group className="mb-3">
               <Form.Label>Address Label</Form.Label>
               <Form.Control 
@@ -317,7 +319,9 @@ export default function CheckoutAddress() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleModalSave}>Save Address</Button>
+          <Button variant="primary" onClick={handleModalSave} disabled={isSaving}>
+            {isSaving ? <Spinner size="sm" animation="border"/> : "Save & Use Address"}
+          </Button>
         </Modal.Footer>
       </Modal>
     </>

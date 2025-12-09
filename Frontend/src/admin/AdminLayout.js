@@ -8,6 +8,7 @@ import {
   faUsers,
   faSignOutAlt,
   faUserCircle,
+  faMoneyBillWave, // <--- Added Icon
 } from "@fortawesome/free-solid-svg-icons";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 
@@ -90,7 +91,20 @@ const AdminLayout = () => {
               </NavLink>
             </Nav.Item>
 
-            {/* --- FIX: MOVED INSIDE <Nav> --- */}
+            {/* --- NEW: TRANSACTIONS LINK --- */}
+            <Nav.Item className="mb-2">
+              <NavLink
+                to="/admin/transactions"
+                className={({ isActive }) =>
+                  `nav-link text-white d-flex align-items-center p-2 rounded ${
+                    isActive ? "active-link" : ""
+                  }`
+                }
+              >
+                <FontAwesomeIcon icon={faMoneyBillWave} className="me-3" /> Transactions
+              </NavLink>
+            </Nav.Item>
+
             <Nav.Item className="mb-2">
               <NavLink
                 to="/admin/messages"
@@ -103,7 +117,6 @@ const AdminLayout = () => {
                 <FontAwesomeIcon icon={faEnvelope} className="me-3" /> Messages
               </NavLink>
             </Nav.Item>
-            {/* ------------------------------- */}
           </Nav>
 
           {/* 3. Admin Profile & Logout Section */}

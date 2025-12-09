@@ -63,6 +63,30 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    // Add this to UserController class
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'name' => 'nullable|string|max:255',
+            'address' => 'required|string|max:500',
+            'phone' => 'required|string|max:20', // Mapping 'contact' from frontend to 'phone'
+        ]);
+
+        // Update fields
+        $user->name = $validated['name'] ?? $user->name;
+        $user->address = $validated['address'];
+        $user->phone = $validated['phone'];
+        
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user
+        ]);
+    }
+
     // Add this inside your User class
     public function paymentMethods()
     {
