@@ -56,10 +56,15 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store']);
 
+    Route::put('/user/profile', [App\Http\Controllers\UserController::class, 'updateProfile']);
+
     // Admin Route (Inside auth middleware)
     Route::middleware('auth:sanctum')->group(function () {
         // ... other routes ...
         Route::get('/admin/messages', [ContactMessageController::class, 'index']);
         Route::get('/admin/stats', [App\Http\Controllers\DashboardController::class, 'stats']);
+        // Admin Transactions / Orders
+        Route::get('/admin/orders', [App\Http\Controllers\AdminOrderController::class, 'index']);
+        Route::put('/admin/orders/{id}/status', [App\Http\Controllers\AdminOrderController::class, 'updateStatus']);
     });
 });
