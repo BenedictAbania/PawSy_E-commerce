@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Button, Image, Form } from "react-bootstrap";
+// 1. ADDED Spinner to imports
+import { Container, Row, Col, Button, Image, Form, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import "../styles/CartPage.css";
 
@@ -19,7 +20,6 @@ const CartPage = () => {
         const user = localStorage.getItem('currentUser');
         if (!user) {
           setIsLoggedIn(false);
-          // Load from localStorage if not logged in
           const saved = localStorage.getItem("cartItems");
           setCartItems(saved ? JSON.parse(saved) : []);
           setLoading(false);
@@ -29,7 +29,6 @@ const CartPage = () => {
         setIsLoggedIn(true);
         const token = localStorage.getItem('authToken');
         
-        // Fetch cart from backend
         const response = await fetch(API_URL, {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -39,7 +38,6 @@ const CartPage = () => {
 
         if (response.ok) {
           const data = await response.json();
-          // Map backend format to frontend format
           const items = data.items.map(item => ({
             id: item.product_id,
             product_id: item.product_id,
@@ -51,13 +49,11 @@ const CartPage = () => {
           }));
           setCartItems(items);
         } else if (response.status === 401) {
-          // Token invalid, fall back to localStorage
           const saved = localStorage.getItem("cartItems");
           setCartItems(saved ? JSON.parse(saved) : []);
         }
       } catch (err) {
         console.error('Error fetching cart:', err);
-        // Fall back to localStorage on error
         const saved = localStorage.getItem("cartItems");
         setCartItems(saved ? JSON.parse(saved) : []);
       } finally {
@@ -73,14 +69,12 @@ const CartPage = () => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Quantity update function
   const updateQuantity = async (productId, cartId, change) => {
     const item = cartItems.find(i => i.id === productId);
     if (!item) return;
 
     const newQuantity = Math.max(1, item.quantity + change);
 
-    // Update locally first
     setCartItems((prevItems) =>
       prevItems.map((item) =>
         item.id === productId
@@ -89,7 +83,6 @@ const CartPage = () => {
       )
     );
 
-    // Sync with backend if logged in
     if (isLoggedIn && cartId) {
       try {
         const token = localStorage.getItem('authToken');
@@ -105,7 +98,6 @@ const CartPage = () => {
 
         if (!response.ok) {
           console.error('Failed to update cart on backend');
-          // Revert on error
           setCartItems((prevItems) =>
             prevItems.map((i) =>
               i.id === productId ? { ...i, quantity: item.quantity } : i
@@ -118,12 +110,9 @@ const CartPage = () => {
     }
   };
 
-  // Remove item
   const removeItem = async (productId, cartId) => {
-    // Update locally first
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== productId));
 
-    // Sync with backend if logged in
     if (isLoggedIn && cartId) {
       try {
         const token = localStorage.getItem('authToken');
@@ -137,7 +126,6 @@ const CartPage = () => {
 
         if (!response.ok) {
           console.error('Failed to remove item from backend');
-          // Revert on error (add item back)
           const removedItem = cartItems.find(i => i.id === productId);
           if (removedItem) {
             setCartItems((prevItems) => [...prevItems, removedItem]);
@@ -149,7 +137,6 @@ const CartPage = () => {
     }
   };
 
-  // Calculate totals
   const calculateTotals = () => {
     const subtotal = cartItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
@@ -162,35 +149,41 @@ const CartPage = () => {
 
   const totals = calculateTotals();
 
+  // --- 2. ADDED LOADING STATE HERE ---
+  if (loading) {
+    return (
+      <Container className="my-5 text-center py-5">
+        <Spinner animation="border" variant="warning" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+        <p className="mt-3 text-muted">Loading your cart...</p>
+      </Container>
+    );
+  }
+
   return (
     <Container className="wishlist-container my-5">
       
-      {}
       <div className="wishlist-header">
         <h1>Cart ({cartItems.length})</h1>
       </div>
 
-      {}
       {cartItems.length === 0 ? (
         <Row>
           <Col className="text-center mt-4">
-
             <p className="text-muted">
               Your cart is empty. Add items by browsing the shop!
             </p>
-
             <Button
               variant="outline-secondary"
               onClick={() => navigate("/shop")}
             >
               Go Shopping
             </Button>
-
           </Col>
         </Row>
       ) : (
         <Row>
-          {}
           <Col lg={8}>
             <div className="cart-items-list">
               {cartItems.map((item) => (
@@ -239,7 +232,6 @@ const CartPage = () => {
             </div>
           </Col>
 
-          {}
           <Col lg={4}>
             <aside className="order-summary">
               <h3>Order Summary</h3>
