@@ -1,0 +1,181 @@
+.main-navbar {
+  background-color: #ffffff;
+  padding: 15px 0;
+
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+
+}
+
+.brand-logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #000000 !important;
+}
+
+
+.brand-logo .icon-logo {
+  height: 60px;
+
+}
+
+.nav-link-custom {
+  color: #333 !important;
+  margin: 0 12px;
+  font-weight: 500;
+}
+
+.nav-link-custom:hover {
+  color: #fd7e14 !important;
+}
+
+.search-form {
+  margin-right: 15px;
+}
+
+.search-input {
+  border-radius: 20px 20px 20px 20px;
+  border: 1px solid #ddd;
+  padding: 6px 12px;
+}
+
+.search-btn {
+  border-radius: 35px 35px 35px 35px;
+  margin-left: 10px;
+  background-color: #000000;
+  color: rgb(255, 255, 255);
+  border: none;
+}
+
+.search-btn:hover {
+  color: #fd7e14 !important;
+}
+
+/* whhat */
+.nav-icons {
+
+  display: flex;
+  gap: 12px;
+  margin-left: 15px;
+}
+
+.nav-icon {
+  font-size: x-large;
+  cursor: pointer;
+  color: #212529; 
+  text-decoration: none; 
+  transition: color 0.2s ease-in-out; 
+}
+
+.nav-icon:hover {
+  color: #fd7e14; 
+}
+
+/* Profile dropdown */
+.profile-menu { position: relative; }
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 36px;
+  background: #fff;
+  border: 1px solid #eee;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  padding: 14px 12px;
+  min-width: 200px;
+  z-index: 2000;
+  border-radius: 8px;
+}
+.profile-dropdown .profile-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #111;
+  user-select: none;
+  pointer-events: none;
+  font-size: 14px;
+}
+.profile-dropdown .profile-email {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 12px;
+  user-select: none;
+  pointer-events: none;
+}
+.profile-dropdown .profile-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 10px;
+}
+.profile-dropdown .profile-actions a {
+  flex: 1;
+  color: #333;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid #ddd;
+}
+.profile-dropdown .profile-actions a:hover {
+  background-color: #f9f9f9;
+  border-color: #f97316;
+  color: #f97316;
+}
+.profile-dropdown .logout-btn {
+  flex: 1;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+.profile-dropdown .logout-btn:hover {
+  background: #ea580c;
+}
+
+
+/* added: keep the icon color same as surrounding text
+reason: turns blue when hovered */
+.nav-icons .nav-icon a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nav-icons .nav-icon a:hover {
+  color: #f87537;
+}
+
+/* Added badge styles for wishlist and cart */
+.nav-icon {
+  position: relative; 
+  display: inline-block;
+}
+
+.wishlist-badge, 
+.cart-badge {
+  position: absolute;
+  top: -8px;  
+  right: -10px; 
+  font-size: 0.65rem !important; 
+  padding: 3px 5px !important;
+  border-radius: 50%; 
+  min-width: 18px;
+  text-align: center;
+  line-height: 1;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.wishlist-badge {
+  background-color: #dc3545; 
+}
+
+.cart-badge {
+  background-color: #f59e0b; 
+}

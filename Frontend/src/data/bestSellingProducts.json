@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Cat Bowl",
+    "price": 13.99,
+    "image": "/assets/bestselling/catbowl.png"
+  },
+  {
+    "id": 2,
+    "name": "Cat Cage",
+    "price": 39.99,
+    "image": "/assets/bestselling/catcage.png"
+  },
+  {
+    "id": 3,
+    "name": "Dog Bowl",
+    "price": 24.99,
+    "image": "/assets/bestselling/dogbowl.png"
+  },
+  {
+    "id": 4,
+    "name": "Cog Collar",
+    "price": 11.99,
+    "image": "/assets/bestselling/dogcollar.png"
+  },
+  {
+    "id": 5,
+    "name": "Cat Scratching Post",
+    "price": 39.99,
+    "image": "/assets/products/cat-scratcher.png"
+  },
+  {
+    "id": 6,
+    "name": "Rabbit Hutch",
+    "price": 13.99,
+    "image": "/assets/products/rabbit-hutch.png"
+  },
+  {
+    "id": 7,
+    "name": "Hamster Wheel",
+    "price": 24.99,
+    "image": "/assets/products/hamster-wheel.png"
+  },
+  {
+    "id": 8,
+    "name": "turtle Stone Cave",
+    "price": 89.99,
+    "image": "/assets/products/rabbit-hutch.png"
+  }
+]

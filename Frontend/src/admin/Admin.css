@@ -1,0 +1,95 @@
+:root {
+  --primary-orange: #fd7e14;
+  --light-bg: #f8f9fa;
+  --sidebar-width: 260px;
+}
+
+body {
+  background-color: var(--light-bg);
+  font-family: sans-serif;
+}
+
+
+.admin-sidebar {
+  width: var(--sidebar-width);
+  background-color: white;
+  min-height: 100vh;
+  border-right: 1px solid #dee2e6;
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-section {
+  padding: 25px;
+  color: var(--primary-orange);
+  font-weight: bold;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.nav-section {
+  padding: 20px;
+  flex-grow: 1;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  margin-bottom: 8px;
+  color: #555;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.sidebar-link:hover {
+  background-color: #fff3cd;
+  color: #e67e22;
+}
+
+.sidebar-link.active {
+  background-color: var(--primary-orange);
+  color: white;
+}
+
+.main-content {
+  /* margin-left: var(--sidebar-width); */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.top-header {
+  background: white;
+  padding: 15px 30px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-container {
+  padding: 30px;
+}
+
+
+.btn-orange {
+  background-color: var(--primary-orange);
+  color: white;
+  border: none;
+}
+.btn-orange:hover {
+  background-color: #e36a0d;
+  color: white;
+}
+
+.table-orange-header th {
+  background-color: #fff8e1 !important;
+  color: #8d6e63;
+}
