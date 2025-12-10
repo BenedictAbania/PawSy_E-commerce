@@ -221,3 +221,26 @@
 }
 
 
+.arrow-buttons-below {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.arrow-btn {
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Add this if you want the arrow icon to be white */
+  color: white; 
+  background-color: black;
+  border: none;
+}
+
+.arrow-btn:hover {
+  background-color: #fd7e14;
+}
