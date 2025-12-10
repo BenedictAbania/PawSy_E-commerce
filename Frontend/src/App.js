@@ -3,11 +3,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 
-
+//Components
 import NavBar from "./components/Navbar";
 import Footer from "./components/Footer";
 
-
+//Pages
 import LandingPage from "./pages/LandingPage";
 import Shop from "./pages/Shop";
 import AboutUs from "./pages/AboutUs";
